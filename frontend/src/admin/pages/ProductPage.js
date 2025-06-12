@@ -1,9 +1,7 @@
-// src/admin/pages/ProductPage.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../shared/contexts/AuthContext';
 
 const ProductPage = () => {
-  const { user } = useAuth();
+  const user = { nama: 'Admin User' }; // Mock user
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -170,9 +168,7 @@ const ProductPage = () => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -306,995 +302,490 @@ const ProductPage = () => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '60vh',
-        flexDirection: 'column'
-      }}>
-        <div className="spinner" style={{ 
-          width: '40px', 
-          height: '40px', 
-          margin: '0 auto 20px' 
-        }}></div>
-        <p>Loading products...</p>
-      </div>
+      <>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600 text-lg">Loading products...</p>
+          </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div style={{ padding: '20px', background: '#f8f9fa', minHeight: '100vh' }}>
-      {/* Header */}
-      <div style={{ 
-        background: 'white', 
-        padding: '24px', 
-        borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        marginBottom: '24px'
-      }}>
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px'
-        }}>
-          <div>
-            <h1 style={{ margin: '0 0 8px 0', color: '#333', fontSize: '1.75rem' }}>
-              📦 Product Management
-            </h1>
-            <p style={{ margin: 0, color: '#666' }}>
-              Manage your product inventory, pricing, and details
-            </p>
-          </div>
-          <button
-            onClick={() => openModal('add')}
-            style={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '12px 24px',
-              cursor: 'pointer',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-          >
-            ➕ Add New Product
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div style={{ 
-        background: 'white', 
-        padding: '20px', 
-        borderRadius: '12px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        marginBottom: '24px'
-      }}>
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', 
-          gap: '16px',
-          alignItems: 'end'
-        }}>
-          {/* Search */}
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '6px', 
-              fontWeight: '500',
-              color: '#333'
-            }}>
-              🔍 Search Products
-            </label>
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or description..."
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '2px solid #e9ecef',
-                borderRadius: '6px',
-                fontSize: '14px',
-                transition: 'border-color 0.3s ease',
-                boxSizing: 'border-box'
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#667eea'}
-              onBlur={(e) => e.target.style.borderColor = '#e9ecef'}
-            />
-          </div>
-
-          {/* Category Filter */}
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: '6px', 
-              fontWeight: '500',
-              color: '#333'
-            }}>
-              📂 Category
-            </label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '10px 12px',
-                border: '2px solid #e9ecef',
-                borderRadius: '6px',
-                fontSize: '14px',
-                backgroundColor: 'white',
-                cursor: 'pointer',
-                boxSizing: 'border-box'
-              }}
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category === 'all' ? 'All Categories' : category}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Stats */}
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ color: '#666', fontSize: '14px' }}>
-              Showing {filteredProducts.length} of {products.length} products
-            </div>
-            <div style={{ color: '#667eea', fontSize: '12px', marginTop: '2px' }}>
-              Total Stock Value: {formatCurrency(
-                filteredProducts.reduce((sum, p) => sum + (p.harga * p.stok), 0)
-              )}
+    <>
+      {/* CDN Links */}
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-3xl p-8 mb-8 text-white shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full translate-y-24 -translate-x-24"></div>
+            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+              <div>
+                <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+                  <i className="fas fa-box text-orange-400"></i>
+                  Product Management
+                </h1>
+                <p className="text-purple-100 text-lg">Manage your product inventory, pricing, and details</p>
+              </div>
+              <button
+                onClick={() => openModal('add')}
+                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg transform hover:-translate-y-1"
+              >
+                <i className="fas fa-plus"></i>
+                Add New Product
+              </button>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Error Display */}
-      {error && (
-        <div style={{
-          background: '#f8d7da',
-          color: '#721c24',
-          padding: '12px 16px',
-          borderRadius: '8px',
-          marginBottom: '20px',
-          border: '1px solid #f5c6cb',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
-          <span>❌ {error}</span>
-          <button
-            onClick={() => setError(null)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#721c24',
-              cursor: 'pointer',
-              fontSize: '16px'
-            }}
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {/* Products Grid */}
-      {filteredProducts.length === 0 ? (
-        <div style={{
-          background: 'white',
-          padding: '60px 20px',
-          borderRadius: '12px',
-          textAlign: 'center',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-        }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>📦</div>
-          <h3 style={{ color: '#666', marginBottom: '8px' }}>No Products Found</h3>
-          <p style={{ color: '#999' }}>
-            {searchTerm || selectedCategory !== 'all' 
-              ? 'Try adjusting your search filters' 
-              : 'Start by adding your first product'
-            }
-          </p>
-        </div>
-      ) : (
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-          gap: '20px'
-        }}>
-          {filteredProducts.map(product => (
-            <div
-              key={product.id_produk}
-              style={{
-                background: 'white',
-                borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                overflow: 'hidden',
-                transition: 'all 0.3s ease',
-                border: '1px solid #f0f0f0'
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-              }}
-            >
-              {/* Product Image */}
-              <div style={{ position: 'relative' }}>
-                <img
-                  src={product.gambar_url}
-                  alt={product.nama_produk}
-                  style={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'cover',
-                    backgroundColor: '#f8f9fa'
-                  }}
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/320x200/e9ecef/6c757d?text=No+Image';
-                  }}
-                />
-                
-                {/* Stock Badge */}
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  right: '12px',
-                  background: product.stok > 20 ? '#28a745' : product.stok > 10 ? '#ffc107' : '#dc3545',
-                  color: product.stok > 10 ? 'white' : '#333',
-                  padding: '4px 8px',
-                  borderRadius: '12px',
-                  fontSize: '12px',
-                  fontWeight: '500'
-                }}>
-                  {product.stok} in stock
-                </div>
-
-                {/* Category Badge */}
-                <div style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  background: 'rgba(102, 126, 234, 0.9)',
-                  color: 'white',
-                  padding: '4px 8px',
-                  borderRadius: '12px',
-                  fontSize: '11px',
-                  fontWeight: '500'
-                }}>
-                  {product.kategori}
+          {/* Filters */}
+          <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-end">
+              {/* Search */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <i className="fas fa-search text-purple-500"></i>
+                  Search Products
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search by name or description..."
+                    className="w-full pl-4 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                  />
                 </div>
               </div>
 
-              {/* Product Details */}
-              <div style={{ padding: '20px' }}>
-                <h3 style={{
-                  margin: '0 0 8px 0',
-                  fontSize: '1.1rem',
-                  color: '#333',
-                  lineHeight: '1.4',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden'
-                }}>
-                  {product.nama_produk}
-                </h3>
-                
-                <p style={{
-                  margin: '0 0 16px 0',
-                  color: '#666',
-                  fontSize: '14px',
-                  lineHeight: '1.5',
-                  display: '-webkit-box',
-                  WebkitLineClamp: 2,
-                  WebkitBoxOrient: 'vertical',
-                  overflow: 'hidden'
-                }}>
-                  {product.deskripsi}
-                </p>
-
-                {/* Price */}
-                <div style={{
-                  fontSize: '1.25rem',
-                  fontWeight: '700',
-                  color: '#667eea',
-                  marginBottom: '16px'
-                }}>
-                  {formatCurrency(product.harga)}
-                </div>
-
-                {/* Metadata */}
-                <div style={{
-                  fontSize: '12px',
-                  color: '#999',
-                  marginBottom: '16px',
-                  borderTop: '1px solid #f0f0f0',
-                  paddingTop: '12px'
-                }}>
-                  <div>Created: {formatDate(product.created_at)}</div>
-                  <div>Updated: {formatDate(product.updated_at)}</div>
-                </div>
-
-                {/* Action Buttons */}
-                <div style={{
-                  display: 'flex',
-                  gap: '8px'
-                }}>
-                  <button
-                    onClick={() => openModal('edit', product)}
-                    style={{
-                      flex: 1,
-                      background: '#28a745',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '8px 12px',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      fontWeight: '500',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.background = '#218838'}
-                    onMouseOut={(e) => e.target.style.background = '#28a745'}
-                  >
-                    ✏️ Edit
-                  </button>
-                  
-                  <button
-                    onClick={() => openModal('delete', product)}
-                    style={{
-                      flex: 1,
-                      background: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '8px 12px',
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      fontWeight: '500',
-                      transition: 'all 0.3s ease'
-                    }}
-                    onMouseOver={(e) => e.target.style.background = '#c82333'}
-                    onMouseOut={(e) => e.target.style.background = '#dc3545'}
-                  >
-                    🗑️ Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Modal */}
-      {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '12px',
-            width: '100%',
-            maxWidth: '500px',
-            maxHeight: '90vh',
-            overflow: 'auto',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.3)'
-          }}>
-            {/* Modal Header */}
-            <div style={{
-              padding: '24px 24px 16px',
-              borderBottom: '1px solid #f0f0f0'
-            }}>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}>
-                <h2 style={{ margin: 0, color: '#333' }}>
-                  {modalType === 'add' && '➕ Add New Product'}
-                  {modalType === 'edit' && '✏️ Edit Product'}
-                  {modalType === 'delete' && '🗑️ Delete Product'}
-                </h2>
-                <button
-                  onClick={closeModal}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    fontSize: '24px',
-                    cursor: 'pointer',
-                    color: '#999',
-                    padding: '0',
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}
-                  onMouseOver={(e) => {
-                    e.target.style.background = '#f8f9fa';
-                    e.target.style.color = '#333';
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.background = 'none';
-                    e.target.style.color = '#999';
-                  }}
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                  <i className="fas fa-folder text-purple-500"></i>
+                  Category
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white transition-colors duration-200"
                 >
-                  ✕
-                </button>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category === 'all' ? 'All Categories' : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Stats */}
+              <div className="text-right">
+                <div className="text-gray-600 text-sm">
+                  Showing {filteredProducts.length} of {products.length} products
+                </div>
+                <div className="text-purple-600 text-xs mt-1 font-semibold">
+                  Total Stock Value: {formatCurrency(
+                    filteredProducts.reduce((sum, p) => sum + (p.harga * p.stok), 0)
+                  )}
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Modal Content */}
-            <div style={{ padding: '24px' }}>
-              {modalType === 'delete' ? (
-                // Delete Confirmation
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-                  <h3 style={{ color: '#333', marginBottom: '16px' }}>
-                    Are you sure you want to delete this product?
-                  </h3>
-                  <div style={{
-                    background: '#f8f9fa',
-                    padding: '16px',
-                    borderRadius: '8px',
-                    marginBottom: '24px',
-                    textAlign: 'left'
-                  }}>
-                    <h4 style={{ margin: '0 0 8px 0', color: '#333' }}>
-                      {selectedProduct?.nama_produk}
-                    </h4>
-                    <p style={{ margin: '0 0 8px 0', color: '#666', fontSize: '14px' }}>
-                      Category: {selectedProduct?.kategori}
-                    </p>
-                    <p style={{ margin: '0', color: '#667eea', fontWeight: '600' }}>
-                      {formatCurrency(selectedProduct?.harga)}
-                    </p>
+          {/* Error Display */}
+          {error && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-6 flex justify-between items-center">
+              <span className="text-red-700 flex items-center gap-2">
+                <i className="fas fa-exclamation-circle"></i>
+                {error}
+              </span>
+              <button
+                onClick={() => setError(null)}
+                className="text-red-500 hover:text-red-700 text-xl"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          )}
+
+          {/* Products Grid */}
+          {filteredProducts.length === 0 ? (
+            <div className="bg-white rounded-2xl p-16 text-center shadow-lg">
+              <div className="text-6xl text-gray-300 mb-4">
+                <i className="fas fa-box-open"></i>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Products Found</h3>
+              <p className="text-gray-500">
+                {searchTerm || selectedCategory !== 'all' 
+                  ? 'Try adjusting your search filters' 
+                  : 'Start by adding your first product'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.map(product => (
+                <div
+                  key={product.id_produk}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border border-gray-100"
+                >
+                  {/* Product Image */}
+                  <div className="relative">
+                    <img
+                      src={product.gambar_url}
+                      alt={product.nama_produk}
+                      className="w-full h-48 object-cover bg-gray-100"
+                      onError={(e) => {
+                        e.target.src = 'https://via.placeholder.com/320x200/e9ecef/6c757d?text=No+Image';
+                      }}
+                    />
+                    
+                    {/* Stock Badge */}
+                    <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-bold ${
+                      product.stok > 20 
+                        ? 'bg-green-500 text-white' 
+                        : product.stok > 10 
+                        ? 'bg-yellow-500 text-gray-800' 
+                        : 'bg-red-500 text-white'
+                    }`}>
+                      {product.stok} in stock
+                    </div>
+
+                    {/* Category Badge */}
+                    <div className="absolute top-3 left-3 bg-purple-600 bg-opacity-90 text-white px-2 py-1 rounded-full text-xs font-semibold">
+                      {product.kategori}
+                    </div>
                   </div>
-                  <p style={{ color: '#dc3545', marginBottom: '24px' }}>
-                    This action cannot be undone.
-                  </p>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                    <button
-                      onClick={closeModal}
-                      disabled={isSubmitting}
-                      style={{
-                        background: '#6c757d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '10px 24px',
-                        cursor: 'pointer',
-                        fontWeight: '500'
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      disabled={isSubmitting}
-                      style={{
-                        background: '#dc3545',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '10px 24px',
-                        cursor: 'pointer',
-                        fontWeight: '500',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="spinner" style={{ width: '16px', height: '16px' }}></div>
-                          Deleting...
-                        </>
-                      ) : (
-                        'Delete Product'
-                      )}
-                    </button>
+
+                  {/* Product Details */}
+                  <div className="p-6">
+                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 leading-tight">
+                      {product.nama_produk}
+                    </h3>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2 leading-relaxed">
+                      {product.deskripsi}
+                    </p>
+
+                    {/* Price */}
+                    <div className="text-xl font-bold text-purple-600 mb-4">
+                      {formatCurrency(product.harga)}
+                    </div>
+
+                    {/* Metadata */}
+                    <div className="text-xs text-gray-500 mb-4 pt-3 border-t border-gray-100 space-y-1">
+                      <div>Created: {formatDate(product.created_at)}</div>
+                      <div>Updated: {formatDate(product.updated_at)}</div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => openModal('edit', product)}
+                        className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors duration-200 flex items-center justify-center gap-1"
+                      >
+                        <i className="fas fa-edit"></i>
+                        Edit
+                      </button>
+                      
+                      <button
+                        onClick={() => openModal('delete', product)}
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg text-sm font-semibold transition-colors duration-200 flex items-center justify-center gap-1"
+                      >
+                        <i className="fas fa-trash"></i>
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
-              ) : (
-                // Add/Edit Form
-                <form onSubmit={handleSubmit}>
-                  <div style={{ display: 'grid', gap: '20px' }}>
-                    {/* Product Name */}
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        marginBottom: '6px',
-                        fontWeight: '500',
-                        color: '#333'
-                      }}>
-                        Product Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="nama_produk"
-                        value={formData.nama_produk}
-                        onChange={handleInputChange}
-                        placeholder="Enter product name"
-                        style={{
-                          width: '100%',
-                          padding: '10px 12px',
-                          border: `2px solid ${formErrors.nama_produk ? '#dc3545' : '#e9ecef'}`,
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                      {formErrors.nama_produk && (
-                        <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
-                          {formErrors.nama_produk}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        marginBottom: '6px',
-                        fontWeight: '500',
-                        color: '#333'
-                      }}>
-                        Category *
-                      </label>
-                      <select
-                        name="kategori"
-                        value={formData.kategori}
-                        onChange={handleInputChange}
-                        style={{
-                          width: '100%',
-                          padding: '10px 12px',
-                          border: `2px solid ${formErrors.kategori ? '#dc3545' : '#e9ecef'}`,
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          backgroundColor: 'white',
-                          cursor: 'pointer',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <option value="">Select category</option>
-                        {categories.filter(cat => cat !== 'all').map(category => (
-                          <option key={category} value={category}>
-                            {category}
-                          </option>
-                        ))}
-                      </select>
-                      {formErrors.kategori && (
-                        <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
-                          {formErrors.kategori}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Price and Stock */}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '6px',
-                          fontWeight: '500',
-                          color: '#333'
-                        }}>
-                          Price (IDR) *
-                        </label>
-                        <input
-                          type="number"
-                          name="harga"
-                          value={formData.harga}
-                          onChange={handleInputChange}
-                          placeholder="0"
-                          min="0"
-                          step="1000"
-                          style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            border: `2px solid ${formErrors.harga ? '#dc3545' : '#e9ecef'}`,
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                        {formErrors.harga && (
-                          <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
-                            {formErrors.harga}
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '6px',
-                          fontWeight: '500',
-                          color: '#333'
-                        }}>
-                          Stock Quantity *
-                        </label>
-                        <input
-                          type="number"
-                          name="stok"
-                          value={formData.stok}
-                          onChange={handleInputChange}
-                          placeholder="0"
-                          min="0"
-                          style={{
-                            width: '100%',
-                            padding: '10px 12px',
-                            border: `2px solid ${formErrors.stok ? '#dc3545' : '#e9ecef'}`,
-                            borderRadius: '6px',
-                            fontSize: '14px',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                        {formErrors.stok && (
-                          <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
-                            {formErrors.stok}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Image URL */}
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        marginBottom: '6px',
-                        fontWeight: '500',
-                        color: '#333'
-                      }}>
-                        Image URL
-                      </label>
-                      <input
-                        type="url"
-                        name="gambar_url"
-                        value={formData.gambar_url}
-                        onChange={handleInputChange}
-                        placeholder="https://example.com/image.jpg"
-                        style={{
-                          width: '100%',
-                          padding: '10px 12px',
-                          border: '2px solid #e9ecef',
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                      <div style={{ color: '#666', fontSize: '12px', marginTop: '4px' }}>
-                        Optional: Leave empty for default placeholder image
-                      </div>
-                    </div>
-
-                    {/* Description */}
-                    <div>
-                      <label style={{
-                        display: 'block',
-                        marginBottom: '6px',
-                        fontWeight: '500',
-                        color: '#333'
-                      }}>
-                        Description *
-                      </label>
-                      <textarea
-                        name="deskripsi"
-                        value={formData.deskripsi}
-                        onChange={handleInputChange}
-                        placeholder="Enter product description"
-                        rows="4"
-                        style={{
-                          width: '100%',
-                          padding: '10px 12px',
-                          border: `2px solid ${formErrors.deskripsi ? '#dc3545' : '#e9ecef'}`,
-                          borderRadius: '6px',
-                          fontSize: '14px',
-                          resize: 'vertical',
-                          fontFamily: 'inherit',
-                          boxSizing: 'border-box'
-                        }}
-                      />
-                      {formErrors.deskripsi && (
-                        <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '4px' }}>
-                          {formErrors.deskripsi}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Image Preview */}
-                    {formData.gambar_url && (
-                      <div>
-                        <label style={{
-                          display: 'block',
-                          marginBottom: '6px',
-                          fontWeight: '500',
-                          color: '#333'
-                        }}>
-                          Image Preview
-                        </label>
-                        <div style={{
-                          border: '2px dashed #e9ecef',
-                          borderRadius: '8px',
-                          padding: '16px',
-                          textAlign: 'center'
-                        }}>
-                          <img
-                            src={formData.gambar_url}
-                            alt="Preview"
-                            style={{
-                              maxWidth: '200px',
-                              maxHeight: '150px',
-                              objectFit: 'cover',
-                              borderRadius: '6px'
-                            }}
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              e.target.nextSibling.style.display = 'block';
-                            }}
-                          />
-                          <div style={{ display: 'none', color: '#dc3545', fontSize: '14px' }}>
-                            ❌ Invalid image URL
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Form Actions */}
-                  <div style={{
-                    display: 'flex',
-                    gap: '12px',
-                    marginTop: '32px',
-                    paddingTop: '24px',
-                    borderTop: '1px solid #f0f0f0'
-                  }}>
-                    <button
-                      type="button"
-                      onClick={closeModal}
-                      disabled={isSubmitting}
-                      style={{
-                        flex: 1,
-                        background: '#6c757d',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '12px',
-                        cursor: 'pointer',
-                        fontWeight: '500',
-                        opacity: isSubmitting ? 0.6 : 1
-                      }}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      style={{
-                        flex: 2,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '12px',
-                        cursor: 'pointer',
-                        fontWeight: '500',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '8px',
-                        opacity: isSubmitting ? 0.6 : 1
-                      }}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <div className="spinner" style={{ 
-                            width: '16px', 
-                            height: '16px',
-                            borderColor: 'rgba(255,255,255,0.3)',
-                            borderTopColor: 'white'
-                          }}></div>
-                          {modalType === 'add' ? 'Adding...' : 'Updating...'}
-                        </>
-                      ) : (
-                        <>
-                          {modalType === 'add' ? '➕ Add Product' : '✏️ Update Product'}
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
-              )}
+              ))}
             </div>
-          </div>
+          )}
+
+          {/* Modal */}
+          {showModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                {/* Modal Header */}
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    {modalType === 'add' && (
+                      <>
+                        <i className="fas fa-plus text-orange-500"></i>
+                        Add New Product
+                      </>
+                    )}
+                    {modalType === 'edit' && (
+                      <>
+                        <i className="fas fa-edit text-purple-500"></i>
+                        Edit Product
+                      </>
+                    )}
+                    {modalType === 'delete' && (
+                      <>
+                        <i className="fas fa-trash text-red-500"></i>
+                        Delete Product
+                      </>
+                    )}
+                  </h2>
+                  <button
+                    onClick={closeModal}
+                    className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+
+                {/* Modal Content */}
+                <div className="p-6">
+                  {modalType === 'delete' ? (
+                    // Delete Confirmation
+                    <div className="text-center">
+                      <div className="text-6xl text-red-500 mb-4">
+                        <i className="fas fa-exclamation-triangle"></i>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+                        Are you sure you want to delete this product?
+                      </h3>
+                      <div className="bg-gray-50 rounded-xl p-4 mb-6 text-left">
+                        <h4 className="font-semibold text-gray-800 mb-2">
+                          {selectedProduct?.nama_produk}
+                        </h4>
+                        <p className="text-gray-600 text-sm mb-2">
+                          Category: {selectedProduct?.kategori}
+                        </p>
+                        <p className="text-purple-600 font-semibold">
+                          {formatCurrency(selectedProduct?.harga)}
+                        </p>
+                      </div>
+                      <p className="text-red-600 text-sm mb-6">
+                        <i className="fas fa-exclamation-triangle mr-1"></i>
+                        This action cannot be undone.
+                      </p>
+                      <div className="flex gap-3">
+                        <button
+                          onClick={closeModal}
+                          disabled={isSubmitting}
+                          className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleDelete}
+                          disabled={isSubmitting}
+                          className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <i className="fas fa-spinner animate-spin"></i>
+                              Deleting...
+                            </>
+                          ) : (
+                            'Delete Product'
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Add/Edit Form
+                    <div className="space-y-4">
+                      {/* Product Name */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Product Name *
+                        </label>
+                        <input
+                          type="text"
+                          name="nama_produk"
+                          value={formData.nama_produk}
+                          onChange={handleInputChange}
+                          placeholder="Enter product name"
+                          className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                            formErrors.nama_produk ? 'border-red-500' : 'border-gray-200 focus:border-purple-500'
+                          }`}
+                        />
+                        {formErrors.nama_produk && (
+                          <div className="text-red-500 text-xs mt-1">{formErrors.nama_produk}</div>
+                        )}
+                      </div>
+
+                      {/* Category */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Category *
+                        </label>
+                        <select
+                          name="kategori"
+                          value={formData.kategori}
+                          onChange={handleInputChange}
+                          className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none bg-white transition-colors duration-200 ${
+                            formErrors.kategori ? 'border-red-500' : 'border-gray-200 focus:border-purple-500'
+                          }`}
+                        >
+                          <option value="">Select category</option>
+                          {categories.filter(cat => cat !== 'all').map(category => (
+                            <option key={category} value={category}>
+                              {category}
+                            </option>
+                          ))}
+                        </select>
+                        {formErrors.kategori && (
+                          <div className="text-red-500 text-xs mt-1">{formErrors.kategori}</div>
+                        )}
+                      </div>
+
+                      {/* Price and Stock */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Price (IDR) *
+                          </label>
+                          <input
+                            type="number"
+                            name="harga"
+                            value={formData.harga}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                            min="0"
+                            step="1000"
+                            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                              formErrors.harga ? 'border-red-500' : 'border-gray-200 focus:border-purple-500'
+                            }`}
+                          />
+                          {formErrors.harga && (
+                            <div className="text-red-500 text-xs mt-1">{formErrors.harga}</div>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Stock Quantity *
+                          </label>
+                          <input
+                            type="number"
+                            name="stok"
+                            value={formData.stok}
+                            onChange={handleInputChange}
+                            placeholder="0"
+                            min="0"
+                            className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none transition-colors duration-200 ${
+                              formErrors.stok ? 'border-red-500' : 'border-gray-200 focus:border-purple-500'
+                            }`}
+                          />
+                          {formErrors.stok && (
+                            <div className="text-red-500 text-xs mt-1">{formErrors.stok}</div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Image URL */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Image URL
+                        </label>
+                        <input
+                          type="url"
+                          name="gambar_url"
+                          value={formData.gambar_url}
+                          onChange={handleInputChange}
+                          placeholder="https://example.com/image.jpg"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                        />
+                        <div className="text-gray-500 text-xs mt-1">
+                          Optional: Leave empty for default placeholder image
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Description *
+                        </label>
+                        <textarea
+                          name="deskripsi"
+                          value={formData.deskripsi}
+                          onChange={handleInputChange}
+                          placeholder="Enter product description"
+                          rows="4"
+                          className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none resize-none transition-colors duration-200 ${
+                            formErrors.deskripsi ? 'border-red-500' : 'border-gray-200 focus:border-purple-500'
+                          }`}
+                        />
+                        {formErrors.deskripsi && (
+                          <div className="text-red-500 text-xs mt-1">{formErrors.deskripsi}</div>
+                        )}
+                      </div>
+
+                      {/* Image Preview */}
+                      {formData.gambar_url && (
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Image Preview
+                          </label>
+                          <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center">
+                            <img
+                              src={formData.gambar_url}
+                              alt="Preview"
+                              className="max-w-48 max-h-32 object-cover rounded-lg mx-auto"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                e.target.nextSibling.style.display = 'block';
+                              }}
+                            />
+                            <div className="hidden text-red-500 text-sm">
+                              <i className="fas fa-exclamation-triangle mr-1"></i>
+                              Invalid image URL
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Form Actions */}
+                      <div className="flex gap-3 pt-6 border-t border-gray-200">
+                        <button
+                          type="button"
+                          onClick={closeModal}
+                          disabled={isSubmitting}
+                          className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleSubmit}
+                          disabled={isSubmitting}
+                          className={`flex-2 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2 ${
+                            modalType === 'add' ? 'bg-orange-500 hover:bg-orange-600' : 'bg-purple-500 hover:bg-purple-600'
+                          }`}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <i className="fas fa-spinner animate-spin"></i>
+                              {modalType === 'add' ? 'Adding...' : 'Updating...'}
+                            </>
+                          ) : (
+                            <>
+                              <i className={modalType === 'add' ? 'fas fa-plus' : 'fas fa-edit'}></i>
+                              {modalType === 'add' ? 'Add Product' : 'Update Product'}
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-
-      {/* Inline Styles for Animations */}
-      <style jsx>{`
-        .spinner {
-          border: 3px solid #f3f3f3;
-          border-top: 3px solid #667eea;
-          border-radius: 50%;
-          width: 20px;
-          height: 20px;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-          .product-grid {
-            grid-template-columns: 1fr !important;
-          }
-          
-          .filters-grid {
-            grid-template-columns: 1fr !important;
-          }
-          
-          .modal-content {
-            margin: 10px !important;
-            max-height: 95vh !important;
-          }
-          
-          .price-stock-grid {
-            grid-template-columns: 1fr !important;
-          }
-        }
-
-        /* Scroll bar styling */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: #f1f1f1;
-          border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: #c1c1c1;
-          border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: #a8a8a8;
-        }
-
-        /* Form focus effects */
-        input:focus, select:focus, textarea:focus {
-          outline: none !important;
-          border-color: #667eea !important;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
-        }
-
-        /* Button hover effects */
-        button:hover:not(:disabled) {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        button:active:not(:disabled) {
-          transform: translateY(0);
-        }
-
-        /* Modal animation */
-        .modal-enter {
-          opacity: 0;
-          transform: scale(0.9);
-        }
-
-        .modal-enter-active {
-          opacity: 1;
-          transform: scale(1);
-          transition: opacity 300ms, transform 300ms;
-        }
-
-        /* Card hover effects */
-        .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        /* Loading animation */
-        .loading-shimmer {
-          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-          0% {
-            background-position: -200% 0;
-          }
-          100% {
-            background-position: 200% 0;
-          }
-        }
-
-        /* Success/Error message animations */
-        .alert-enter {
-          opacity: 0;
-          transform: translateY(-20px);
-        }
-
-        .alert-enter-active {
-          opacity: 1;
-          transform: translateY(0);
-          transition: opacity 300ms, transform 300ms;
-        }
-
-        /* Tooltip styles */
-        .tooltip {
-          position: relative;
-        }
-
-        .tooltip:hover::after {
-          content: attr(data-tooltip);
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          background: #333;
-          color: white;
-          padding: 6px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          white-space: nowrap;
-          z-index: 1000;
-        }
-
-        /* Custom select arrow */
-        select {
-          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-          background-position: right 8px center;
-          background-repeat: no-repeat;
-          background-size: 16px;
-          padding-right: 32px !important;
-          appearance: none;
-        }
-
-        /* Focus visible for accessibility */
-        button:focus-visible,
-        input:focus-visible,
-        select:focus-visible,
-        textarea:focus-visible {
-          outline: 2px solid #667eea;
-          outline-offset: 2px;
-        }
-      `}</style>
-    </div>
+      </div>
+    </>
   );
 };
 

@@ -1,9 +1,7 @@
-// src/admin/pages/ReportPage.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../shared/contexts/AuthContext';
 
 const ReportPage = () => {
-    const { user } = useAuth();
+    const user = { nama: 'Admin User' }; // Mock user
     const [reportData, setReportData] = useState({
         sales: [],
         users: [],
@@ -181,85 +179,110 @@ const ReportPage = () => {
     }, [dateFilter]);
 
     const renderStatsCards = () => (
-        <div className="stats-grid">
-            <div className="stat-card sales">
-                <div className="stat-icon">💰</div>
-                <div className="stat-content">
-                    <h3>Total Penjualan</h3>
-                    <p className="stat-value">{formatCurrency(stats.totalSales)}</p>
-                    <span className={`stat-change ${stats.salesGrowth >= 0 ? 'positive' : 'negative'}`}>
-                        {stats.salesGrowth >= 0 ? '↗️' : '↘️'} {Math.abs(stats.salesGrowth).toFixed(1)}%
-                    </span>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-green-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-dollar-sign text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Total Penjualan</h3>
+                        <p className="text-xl font-bold text-gray-800 mb-1">{formatCurrency(stats.totalSales)}</p>
+                        <span className={`text-sm flex items-center gap-1 ${stats.salesGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <i className={`fas ${stats.salesGrowth >= 0 ? 'fa-trending-up' : 'fa-trending-down'}`}></i>
+                            {Math.abs(stats.salesGrowth).toFixed(1)}%
+                        </span>
+                    </div>
                 </div>
             </div>
 
-            <div className="stat-card users">
-                <div className="stat-icon">👥</div>
-                <div className="stat-content">
-                    <h3>Total Pengguna</h3>
-                    <p className="stat-value">{stats.totalUsers.toLocaleString()}</p>
-                    <span className="stat-label">Pengguna baru</span>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-users text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Total Pengguna</h3>
+                        <p className="text-xl font-bold text-gray-800 mb-1">{stats.totalUsers.toLocaleString()}</p>
+                        <span className="text-sm text-gray-500">Pengguna baru</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="stat-card products">
-                <div className="stat-icon">📦</div>
-                <div className="stat-content">
-                    <h3>Total Produk</h3>
-                    <p className="stat-value">{stats.totalProducts}</p>
-                    <span className="stat-label">Produk aktif</span>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-yellow-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-box text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Total Produk</h3>
+                        <p className="text-xl font-bold text-gray-800 mb-1">{stats.totalProducts}</p>
+                        <span className="text-sm text-gray-500">Produk aktif</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="stat-card transactions">
-                <div className="stat-icon">🧾</div>
-                <div className="stat-content">
-                    <h3>Transaksi</h3>
-                    <p className="stat-value">{stats.totalTransactions}</p>
-                    <span className="stat-label">Transaksi selesai</span>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-cyan-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-receipt text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Transaksi</h3>
+                        <p className="text-xl font-bold text-gray-800 mb-1">{stats.totalTransactions}</p>
+                        <span className="text-sm text-gray-500">Transaksi selesai</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="stat-card average">
-                <div className="stat-icon">📊</div>
-                <div className="stat-content">
-                    <h3>Rata-rata Order</h3>
-                    <p className="stat-value">{formatCurrency(stats.averageOrderValue)}</p>
-                    <span className="stat-label">Per transaksi</span>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-purple-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-chart-bar text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Rata-rata Order</h3>
+                        <p className="text-xl font-bold text-gray-800 mb-1">{formatCurrency(stats.averageOrderValue)}</p>
+                        <span className="text-sm text-gray-500">Per transaksi</span>
+                    </div>
                 </div>
             </div>
 
-            <div className="stat-card top-product">
-                <div className="stat-icon">🏆</div>
-                <div className="stat-content">
-                    <h3>Produk Terlaris</h3>
-                    <p className="stat-value">{stats.topSellingProduct}</p>
-                    <span className="stat-label">Paling banyak terjual</span>
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-orange-500 hover:shadow-xl transition-shadow duration-300">
+                <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white">
+                        <i className="fas fa-trophy text-xl"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-600 mb-1">Produk Terlaris</h3>
+                        <p className="text-lg font-bold text-gray-800 mb-1">{stats.topSellingProduct}</p>
+                        <span className="text-sm text-gray-500">Paling banyak terjual</span>
+                    </div>
                 </div>
             </div>
         </div>
     );
 
     const renderSalesReport = () => (
-        <div className="report-table-container">
-            <table className="report-table">
-                <thead>
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Penjualan</th>
-                        <th>Jumlah Order</th>
-                        <th>Pelanggan</th>
-                        <th>Rata-rata Order</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Tanggal</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Penjualan</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Jumlah Order</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pelanggan</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Rata-rata Order</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200">
                     {reportData.sales.map((sale, index) => (
-                        <tr key={index}>
-                            <td>{formatDate(sale.date)}</td>
-                            <td>{formatCurrency(sale.amount)}</td>
-                            <td>{sale.orders}</td>
-                            <td>{sale.customers}</td>
-                            <td>{formatCurrency(sale.amount / sale.orders)}</td>
+                        <tr key={index} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                            <td className="px-6 py-4 text-gray-800">{formatDate(sale.date)}</td>
+                            <td className="px-6 py-4 font-semibold text-gray-800">{formatCurrency(sale.amount)}</td>
+                            <td className="px-6 py-4 text-gray-800">{sale.orders}</td>
+                            <td className="px-6 py-4 text-gray-800">{sale.customers}</td>
+                            <td className="px-6 py-4 font-semibold text-gray-800">{formatCurrency(sale.amount / sale.orders)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -268,25 +291,30 @@ const ReportPage = () => {
     );
 
     const renderUsersReport = () => (
-        <div className="report-table-container">
-            <table className="report-table">
-                <thead>
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th>Tanggal</th>
-                        <th>Pengguna Baru</th>
-                        <th>Pengguna Aktif</th>
-                        <th>Role</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Tanggal</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pengguna Baru</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pengguna Aktif</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Role</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200">
                     {reportData.users.map((user, index) => (
-                        <tr key={index}>
-                            <td>{formatDate(user.date)}</td>
-                            <td>{user.newUsers}</td>
-                            <td>{user.activeUsers}</td>
-                            <td>
-                                <span className={`role-badge ${user.role}`}>
-                                    {user.role === 'admin' ? '👨‍💼 Admin' : '👥 Employee'}
+                        <tr key={index} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                            <td className="px-6 py-4 text-gray-800">{formatDate(user.date)}</td>
+                            <td className="px-6 py-4 text-gray-800">{user.newUsers}</td>
+                            <td className="px-6 py-4 text-gray-800">{user.activeUsers}</td>
+                            <td className="px-6 py-4">
+                                <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                                    user.role === 'admin' 
+                                        ? 'bg-red-100 text-red-700 border border-red-200' 
+                                        : 'bg-blue-100 text-blue-700 border border-blue-200'
+                                }`}>
+                                    <i className={user.role === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
+                                    {user.role === 'admin' ? 'Admin' : 'Employee'}
                                 </span>
                             </td>
                         </tr>
@@ -297,32 +325,38 @@ const ReportPage = () => {
     );
 
     const renderProductsReport = () => (
-        <div className="report-table-container">
-            <table className="report-table">
-                <thead>
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th>ID</th>
-                        <th>Nama Produk</th>
-                        <th>Terjual</th>
-                        <th>Pendapatan</th>
-                        <th>Stok</th>
-                        <th>Kategori</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">ID</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Nama Produk</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Terjual</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pendapatan</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Stok</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Kategori</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200">
                     {reportData.products.map((product) => (
-                        <tr key={product.id}>
-                            <td>#{product.id}</td>
-                            <td>{product.name}</td>
-                            <td>{product.sold}</td>
-                            <td>{formatCurrency(product.revenue)}</td>
-                            <td>
-                                <span className={`stock-badge ${product.stock < 10 ? 'low' : 'normal'}`}>
+                        <tr key={product.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                            <td className="px-6 py-4 text-gray-800 font-semibold">#{product.id}</td>
+                            <td className="px-6 py-4 text-gray-800 font-semibold">{product.name}</td>
+                            <td className="px-6 py-4 text-gray-800">{product.sold}</td>
+                            <td className="px-6 py-4 text-gray-800 font-semibold">{formatCurrency(product.revenue)}</td>
+                            <td className="px-6 py-4">
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                                    product.stock < 10 
+                                        ? 'bg-red-100 text-red-700 border border-red-200' 
+                                        : 'bg-green-100 text-green-700 border border-green-200'
+                                }`}>
                                     {product.stock}
                                 </span>
                             </td>
-                            <td>
-                                <span className="category-badge">{product.category}</span>
+                            <td className="px-6 py-4">
+                                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 border border-purple-200">
+                                    {product.category}
+                                </span>
                             </td>
                         </tr>
                     ))}
@@ -332,31 +366,37 @@ const ReportPage = () => {
     );
 
     const renderTransactionsReport = () => (
-        <div className="report-table-container">
-            <table className="report-table">
-                <thead>
+        <div className="overflow-x-auto">
+            <table className="w-full">
+                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                     <tr>
-                        <th>ID Transaksi</th>
-                        <th>Tanggal</th>
-                        <th>Pelanggan</th>
-                        <th>Produk</th>
-                        <th>Jumlah</th>
-                        <th>Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">ID Transaksi</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Tanggal</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pelanggan</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Produk</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Jumlah</th>
+                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Status</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-gray-200">
                     {reportData.transactions.map((transaction) => (
-                        <tr key={transaction.id}>
-                            <td>{transaction.id}</td>
-                            <td>{formatDate(transaction.date)}</td>
-                            <td>{transaction.customer}</td>
-                            <td>{transaction.product}</td>
-                            <td>{formatCurrency(transaction.amount)}</td>
-                            <td>
-                                <span className={`status-badge ${transaction.status}`}>
-                                    {transaction.status === 'completed' && '✅ Selesai'}
-                                    {transaction.status === 'pending' && '⏳ Pending'}
-                                    {transaction.status === 'cancelled' && '❌ Dibatalkan'}
+                        <tr key={transaction.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                            <td className="px-6 py-4 text-gray-800 font-semibold">{transaction.id}</td>
+                            <td className="px-6 py-4 text-gray-800">{formatDate(transaction.date)}</td>
+                            <td className="px-6 py-4 text-gray-800">{transaction.customer}</td>
+                            <td className="px-6 py-4 text-gray-800">{transaction.product}</td>
+                            <td className="px-6 py-4 text-gray-800 font-semibold">{formatCurrency(transaction.amount)}</td>
+                            <td className="px-6 py-4">
+                                <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
+                                    transaction.status === 'completed' 
+                                        ? 'bg-green-100 text-green-700 border border-green-200'
+                                        : transaction.status === 'pending'
+                                        ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                                        : 'bg-red-100 text-red-700 border border-red-200'
+                                }`}>
+                                    {transaction.status === 'completed' && <><i className="fas fa-check-circle"></i> Selesai</>}
+                                    {transaction.status === 'pending' && <><i className="fas fa-clock"></i> Pending</>}
+                                    {transaction.status === 'cancelled' && <><i className="fas fa-times-circle"></i> Dibatalkan</>}
                                 </span>
                             </td>
                         </tr>
@@ -367,488 +407,153 @@ const ReportPage = () => {
     );
 
     return (
-        <div className="report-page">
-            <div className="report-header">
-                <div className="header-content">
-                    <h1>📊 Laporan & Analisis</h1>
-                    <p>Dashboard laporan komprehensif untuk analisis bisnis</p>
-                </div>
-                <div className="header-actions">
-                    <button
-                        className="btn btn-primary"
-                        onClick={loadReportData}
-                        disabled={loading}
-                    >
-                        {loading ? '⏳ Loading...' : '🔄 Refresh Data'}
-                    </button>
-                </div>
-            </div>
-
-            {/* Date Filter */}
-            <div className="date-filter">
-                <div className="filter-group">
-                    <label>📅 Periode Laporan:</label>
-                    <input
-                        type="date"
-                        value={dateFilter.startDate}
-                        onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="date-input"
-                    />
-                    <span className="date-separator">sampai</span>
-                    <input
-                        type="date"
-                        value={dateFilter.endDate}
-                        onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
-                        className="date-input"
-                    />
-                </div>
-            </div>
-
-            {/* Statistics Cards */}
-            {renderStatsCards()}
-
-            {/* Report Navigation */}
-            <div className="report-nav">
-                <div className="nav-tabs">
-                    <button
-                        className={`nav-tab ${selectedReport === 'sales' ? 'active' : ''}`}
-                        onClick={() => setSelectedReport('sales')}
-                    >
-                        💰 Laporan Penjualan
-                    </button>
-                    <button
-                        className={`nav-tab ${selectedReport === 'users' ? 'active' : ''}`}
-                        onClick={() => setSelectedReport('users')}
-                    >
-                        👥 Laporan Pengguna
-                    </button>
-                    <button
-                        className={`nav-tab ${selectedReport === 'products' ? 'active' : ''}`}
-                        onClick={() => setSelectedReport('products')}
-                    >
-                        📦 Laporan Produk
-                    </button>
-                    <button
-                        className={`nav-tab ${selectedReport === 'transactions' ? 'active' : ''}`}
-                        onClick={() => setSelectedReport('transactions')}
-                    >
-                        🧾 Laporan Transaksi
-                    </button>
-                </div>
-
-                <button
-                    className="btn btn-secondary export-btn"
-                    onClick={() => exportToCSV(reportData[selectedReport], selectedReport)}
-                    disabled={loading || !reportData[selectedReport]?.length}
-                >
-                    📥 Export CSV
-                </button>
-            </div>
-
-            {/* Report Content */}
-            <div className="report-content">
-                {loading ? (
-                    <div className="loading-container">
-                        <div className="spinner"></div>
-                        <p>Memuat data laporan...</p>
+        <>
+            {/* CDN Links */}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+            
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-3xl p-8 mb-8 text-white shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full translate-y-24 -translate-x-24"></div>
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div>
+                                <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+                                    <i className="fas fa-chart-line text-orange-400"></i>
+                                    Laporan & Analisis
+                                </h1>
+                                <p className="text-purple-100 text-lg">Dashboard laporan komprehensif untuk analisis bisnis</p>
+                            </div>
+                            <button
+                                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg disabled:opacity-50"
+                                onClick={loadReportData}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <>
+                                        <i className="fas fa-spinner animate-spin"></i>
+                                        Loading...
+                                    </>
+                                ) : (
+                                    <>
+                                        <i className="fas fa-sync-alt"></i>
+                                        Refresh Data
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
-                ) : (
-                    <div className="report-section">
-                        {selectedReport === 'sales' && renderSalesReport()}
-                        {selectedReport === 'users' && renderUsersReport()}
-                        {selectedReport === 'products' && renderProductsReport()}
-                        {selectedReport === 'transactions' && renderTransactionsReport()}
+
+                    {/* Date Filter */}
+                    <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+                        <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                            <label className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <i className="fas fa-calendar-alt text-purple-500"></i>
+                                Periode Laporan:
+                            </label>
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                                <input
+                                    type="date"
+                                    value={dateFilter.startDate}
+                                    onChange={(e) => setDateFilter(prev => ({ ...prev, startDate: e.target.value }))}
+                                    className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                />
+                                <span className="text-gray-600 font-medium">sampai</span>
+                                <input
+                                    type="date"
+                                    value={dateFilter.endDate}
+                                    onChange={(e) => setDateFilter(prev => ({ ...prev, endDate: e.target.value }))}
+                                    className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                />
+                            </div>
+                        </div>
                     </div>
-                )}
+
+                    {/* Statistics Cards */}
+                    {renderStatsCards()}
+
+                    {/* Report Navigation */}
+                    <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+                        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                            <div className="flex flex-wrap gap-2">
+                                <button
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                        selectedReport === 'sales'
+                                            ? 'bg-purple-500 text-white shadow-lg'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                    onClick={() => setSelectedReport('sales')}
+                                >
+                                    <i className="fas fa-dollar-sign"></i>
+                                    Laporan Penjualan
+                                </button>
+                                <button
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                        selectedReport === 'users'
+                                            ? 'bg-purple-500 text-white shadow-lg'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                    onClick={() => setSelectedReport('users')}
+                                >
+                                    <i className="fas fa-users"></i>
+                                    Laporan Pengguna
+                                </button>
+                                <button
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                        selectedReport === 'products'
+                                            ? 'bg-purple-500 text-white shadow-lg'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                    onClick={() => setSelectedReport('products')}
+                                >
+                                    <i className="fas fa-box"></i>
+                                    Laporan Produk
+                                </button>
+                                <button
+                                    className={`px-4 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 ${
+                                        selectedReport === 'transactions'
+                                            ? 'bg-purple-500 text-white shadow-lg'
+                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    }`}
+                                    onClick={() => setSelectedReport('transactions')}
+                                >
+                                    <i className="fas fa-receipt"></i>
+                                    Laporan Transaksi
+                                </button>
+                            </div>
+
+                            <button
+                                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl transition-all duration-200 font-semibold flex items-center gap-2 disabled:opacity-50"
+                                onClick={() => exportToCSV(reportData[selectedReport], selectedReport)}
+                                disabled={loading || !reportData[selectedReport]?.length}
+                            >
+                                <i className="fas fa-download"></i>
+                                Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Report Content */}
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center py-16">
+                                <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mb-4"></div>
+                                <p className="text-gray-600 text-lg">Memuat data laporan...</p>
+                            </div>
+                        ) : (
+                            <div>
+                                {selectedReport === 'sales' && renderSalesReport()}
+                                {selectedReport === 'users' && renderUsersReport()}
+                                {selectedReport === 'products' && renderProductsReport()}
+                                {selectedReport === 'transactions' && renderTransactionsReport()}
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
-
-            <style jsx>{`
-        .report-page {
-          padding: 24px;
-          background: #f8f9fa;
-          min-height: 100vh;
-        }
-
-        .report-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 24px;
-          background: white;
-          padding: 24px;
-          border-radius: 12px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .header-content h1 {
-          margin: 0 0 8px 0;
-          color: #333;
-          font-size: 1.8rem;
-        }
-
-        .header-content p {
-          margin: 0;
-          color: #666;
-        }
-
-        .date-filter {
-          background: white;
-          padding: 20px;
-          border-radius: 12px;
-          margin-bottom: 24px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .filter-group {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        .filter-group label {
-          font-weight: 500;
-          color: #333;
-        }
-
-        .date-input {
-          padding: 8px 12px;
-          border: 2px solid #e9ecef;
-          border-radius: 6px;
-          font-size: 14px;
-        }
-
-        .date-input:focus {
-          outline: none;
-          border-color: #667eea;
-        }
-
-        .date-separator {
-          color: #666;
-          font-size: 14px;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 20px;
-          margin-bottom: 24px;
-        }
-
-        .stat-card {
-          background: white;
-          padding: 24px;
-          border-radius: 12px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          border-left: 4px solid;
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .stat-card.sales { border-left-color: #28a745; }
-        .stat-card.users { border-left-color: #007bff; }
-        .stat-card.products { border-left-color: #ffc107; }
-        .stat-card.transactions { border-left-color: #17a2b8; }
-        .stat-card.average { border-left-color: #6f42c1; }
-        .stat-card.top-product { border-left-color: #fd7e14; }
-
-        .stat-icon {
-          font-size: 2rem;
-          opacity: 0.8;
-        }
-
-        .stat-content h3 {
-          margin: 0 0 8px 0;
-          font-size: 0.9rem;
-          color: #666;
-          font-weight: 500;
-        }
-
-        .stat-value {
-          margin: 0 0 4px 0;
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #333;
-        }
-
-        .stat-change.positive { color: #28a745; }
-        .stat-change.negative { color: #dc3545; }
-        
-        .stat-label {
-          font-size: 0.8rem;
-          color: #666;
-        }
-
-        .report-nav {
-          background: white;
-          padding: 20px;
-          border-radius: 12px;
-          margin-bottom: 24px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 16px;
-        }
-
-        .nav-tabs {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-
-        .nav-tab {
-          padding: 12px 20px;
-          border: none;
-          background: #f8f9fa;
-          color: #666;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          font-size: 14px;
-        }
-
-        .nav-tab:hover {
-          background: #e9ecef;
-          color: #333;
-        }
-
-        .nav-tab.active {
-          background: #667eea;
-          color: white;
-        }
-
-        .btn {
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          padding: 12px 20px;
-          font-size: 14px;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: #667eea;
-          color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #5a6fd8;
-          transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #5a6268;
-          transform: translateY(-1px);
-        }
-
-        .export-btn {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .report-content {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-          overflow: hidden;
-        }
-
-        .report-table-container {
-          overflow-x: auto;
-        }
-
-        .report-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .report-table th {
-          background: #f8f9fa;
-          padding: 16px;
-          text-align: left;
-          font-weight: 600;
-          color: #333;
-          border-bottom: 2px solid #e9ecef;
-          white-space: nowrap;
-        }
-
-        .report-table td {
-          padding: 16px;
-          border-bottom: 1px solid #e9ecef;
-          color: #333;
-        }
-
-        .report-table tr:hover {
-          background: #f8f9fa;
-        }
-
-        .role-badge {
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 500;
-          white-space: nowrap;
-        }
-
-        .role-badge.admin {
-          background: #dc3545;
-          color: white;
-        }
-
-        .role-badge.employee {
-          background: #007bff;
-          color: white;
-        }
-
-        .stock-badge {
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 500;
-        }
-
-        .stock-badge.low {
-          background: #dc3545;
-          color: white;
-        }
-
-        .stock-badge.normal {
-          background: #28a745;
-          color: white;
-        }
-
-        .category-badge {
-          background: #6f42c1;
-          color: white;
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-        }
-
-        .status-badge {
-          padding: 4px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-          font-weight: 500;
-          white-space: nowrap;
-        }
-
-        .status-badge.completed {
-          background: #d4edda;
-          color: #155724;
-        }
-
-        .status-badge.pending {
-          background: #fff3cd;
-          color: #856404;
-        }
-
-        .status-badge.cancelled {
-          background: #f8d7da;
-          color: #721c24;
-        }
-
-        .loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          padding: 60px;
-          color: #666;
-        }
-
-        .spinner {
-          width: 32px;
-          height: 32px;
-          border: 3px solid #f3f3f3;
-          border-top: 3px solid #667eea;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-          .report-page {
-            padding: 16px;
-          }
-
-          .report-header {
-            flex-direction: column;
-            gap: 16px;
-            text-align: center;
-          }
-
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .filter-group {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .nav-tabs {
-            flex-direction: column;
-            width: 100%;
-          }
-
-          .nav-tab {
-            width: 100%;
-            text-align: center;
-          }
-
-          .report-nav {
-            flex-direction: column;
-          }
-
-          .report-table {
-            font-size: 14px;
-          }
-
-          .report-table th,
-          .report-table td {
-            padding: 12px 8px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .report-table th,
-          .report-table td {
-            padding: 8px 4px;
-            font-size: 12px;
-          }
-
-          .stat-card {
-            padding: 16px;
-          }
-
-          .stat-value {
-            font-size: 1.2rem;
-          }
-        }
-      `}</style>
-        </div>
+        </>
     );
 };
 

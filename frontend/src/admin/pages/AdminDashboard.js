@@ -1,10 +1,7 @@
-// src/admin/pages/AdminDashboard.js
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '../../shared/contexts/AuthContext';
 
 const AdminDashboard = () => {
-  const { user } = useAuth();
+  const user = { nama: 'Admin User' }; // Mock user
   const [stats, setStats] = useState({
     products: { total_products: 0 },
     transactions: { overview: { total_transactions: 0, total_revenue: 0 } },
@@ -93,46 +90,64 @@ const AdminDashboard = () => {
     setRefreshing(false);
   };
 
-  const StatCard = ({ title, value, icon, color, link }) => (
-    <div className={`stat-card ${color}`}>
-      <div className="stat-content">
-        <div className="stat-header">
-          <div className="stat-icon">
-            <span>{icon}</span>
-          </div>
-          <div className="stat-info">
-            <h3 className="stat-value">{value}</h3>
-            <p className="stat-title">{title}</p>
-          </div>
+  const StatCard = ({ title, value, icon, colorClass, link }) => (
+    <div className={`${colorClass} bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 border-l-4`}>
+      <div className="flex items-start gap-4 mb-4">
+        <div className={`${colorClass.includes('orange') ? 'bg-gradient-to-br from-orange-500 to-orange-600' : 
+                        colorClass.includes('purple') ? 'bg-gradient-to-br from-purple-500 to-purple-600' :
+                        colorClass.includes('green') ? 'bg-gradient-to-br from-green-400 to-green-500' :
+                        'bg-gradient-to-br from-blue-500 to-blue-600'} w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl shadow-lg`}>
+          <i className={icon}></i>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-3xl font-bold text-gray-800 mb-1">{value}</h3>
+          <p className="text-gray-600 text-sm font-semibold uppercase tracking-wide">{title}</p>
         </div>
       </div>
       {link && (
-        <Link to={link} className="stat-link">
-          👁️ View Details
-        </Link>
+        <a href={link} className={`${colorClass.includes('orange') ? 'text-orange-500 hover:text-orange-600' :
+                                   colorClass.includes('purple') ? 'text-purple-500 hover:text-purple-600' :
+                                   colorClass.includes('green') ? 'text-green-500 hover:text-green-600' :
+                                   'text-blue-500 hover:text-blue-600'} inline-flex items-center gap-2 text-sm font-semibold pt-4 border-t border-gray-100 transition-all duration-200 hover:translate-x-1`}>
+          <i className="fas fa-eye"></i>
+          View Details
+        </a>
       )}
     </div>
   );
 
   const QuickActions = () => (
-    <div className="quick-actions-section">
-      <h2 className="section-title">Quick Actions</h2>
-      <div className="quick-actions-grid">
-        <Link to="/admin/products" className="quick-action-item">
-          <span className="action-icon">➕</span>
-          <span>Add Product</span>
-        </Link>
-        <Link to="/admin/users" className="quick-action-item">
-          <span className="action-icon">👥</span>
-          <span>Manage Users</span>
-        </Link>
-        <Link to="/admin/reports" className="quick-action-item">
-          <span className="action-icon">📊</span>
-          <span>View Reports</span>
-        </Link>
-        <button onClick={refreshData} className="quick-action-item" disabled={refreshing}>
-          <span className={`action-icon ${refreshing ? 'spinning' : ''}`}>🔄</span>
-          <span>Refresh Data</span>
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+        <i className="fas fa-bolt text-yellow-500"></i>
+        Quick Actions
+      </h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/admin/products" className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-2 border-transparent hover:border-purple-400 group">
+          <div className="text-3xl mb-3 bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
+            <i className="fas fa-plus"></i>
+          </div>
+          <span className="text-gray-700 font-semibold group-hover:text-purple-600">Add Product</span>
+        </a>
+        <a href="/admin/users" className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-2 border-transparent hover:border-purple-400 group">
+          <div className="text-3xl mb-3 bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
+            <i className="fas fa-users"></i>
+          </div>
+          <span className="text-gray-700 font-semibold group-hover:text-purple-600">Manage Users</span>
+        </a>
+        <a href="/admin/reports" className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-2 border-transparent hover:border-purple-400 group">
+          <div className="text-3xl mb-3 bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent">
+            <i className="fas fa-chart-bar"></i>
+          </div>
+          <span className="text-gray-700 font-semibold group-hover:text-purple-600">View Reports</span>
+        </a>
+        <button onClick={refreshData} disabled={refreshing} className="bg-white rounded-xl p-6 text-center shadow-md hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 border-2 border-transparent hover:border-purple-400 group disabled:opacity-50">
+          <div className={`text-3xl mb-3 bg-gradient-to-r from-purple-500 to-orange-500 bg-clip-text text-transparent ${refreshing ? 'animate-spin' : ''}`}>
+            <i className="fas fa-sync-alt"></i>
+          </div>
+          <span className="text-gray-700 font-semibold group-hover:text-purple-600">
+            {refreshing ? 'Refreshing...' : 'Refresh Data'}
+          </span>
         </button>
       </div>
     </div>
@@ -140,20 +155,28 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading dashboard...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 text-lg">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="error-container">
-        <div className="alert alert-error">
-          <p>❌ {error}</p>
-          <button onClick={fetchDashboardData} className="btn btn-primary btn-sm">
-            🔄 Retry
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 text-center max-w-md shadow-lg">
+          <i className="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+          <p className="text-red-700 text-lg mb-4">{error}</p>
+          <button onClick={fetchDashboardData} className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-lg transition-colors duration-200">
+            <i className="fas fa-redo mr-2"></i>
+            Retry
           </button>
         </div>
       </div>
@@ -161,176 +184,164 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="admin-dashboard">
-      {/* Header */}
-      <div className="dashboard-header">
-        <div className="header-content">
-          <div className="header-text">
-            <h1 className="dashboard-title">📊 Admin Dashboard</h1>
-            <p className="dashboard-subtitle">Welcome back, {user?.nama}! Here's what's happening in your store.</p>
-          </div>
-          <div className="header-actions">
-            <button onClick={refreshData} className="btn btn-secondary" disabled={refreshing}>
-              <span className={refreshing ? 'spinning' : ''}>🔄</span>
-              {refreshing ? 'Refreshing...' : 'Refresh'}
-            </button>
-            <Link to="/admin/products" className="btn btn-primary">
-              ➕ Add Product
-            </Link>
-          </div>
+    <>
+      {/* CDN Links */}
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+      <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+      
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+        {/* Header */}
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Total Products"
+            value={stats?.products?.total_products || 0}
+            icon="fas fa-box"
+            colorClass="border-blue-500"
+            link="/admin/products"
+          />
+          <StatCard
+            title="Total Users"
+            value={stats?.totalUsers || 0}
+            icon="fas fa-users"
+            colorClass="border-green-500"
+            link="/admin/users"
+          />
+          <StatCard
+            title="Monthly Transactions"
+            value={stats?.transactions?.overview?.total_transactions || 0}
+            icon="fas fa-shopping-cart"
+            colorClass="border-purple-500"
+            link="/admin/transactions"
+          />
+          <StatCard
+            title="Monthly Revenue"
+            value={`Rp ${(stats?.transactions?.overview?.total_revenue || 0).toLocaleString()}`}
+            icon="fas fa-dollar-sign"
+            colorClass="border-orange-500"
+            link="/admin/reports"
+          />
         </div>
-      </div>
 
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <StatCard
-          title="Total Products"
-          value={stats?.products?.total_products || 0}
-          icon="📦"
-          color="blue"
-          link="/admin/products"
-        />
-        <StatCard
-          title="Total Users"
-          value={stats?.totalUsers || 0}
-          icon="👥"
-          color="green"
-          link="/admin/users"
-        />
-        <StatCard
-          title="Monthly Transactions"
-          value={stats?.transactions?.overview?.total_transactions || 0}
-          icon="🛒"
-          color="purple"
-          link="/admin/transactions"
-        />
-        <StatCard
-          title="Monthly Revenue"
-          value={`Rp ${(stats?.transactions?.overview?.total_revenue || 0).toLocaleString()}`}
-          icon="💰"
-          color="orange"
-          link="/admin/reports"
-        />
-      </div>
+        {/* Quick Actions */}
+        <QuickActions />
 
-      {/* Quick Actions */}
-      <QuickActions />
-
-      <div className="dashboard-content">
-        {/* Recent Transactions */}
-        <div className="dashboard-section">
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">
-                📈 Recent Transactions
+        <div className="grid lg:grid-cols-3 gap-8 mb-8">
+          {/* Recent Transactions */}
+          <div className="lg:col-span-2 bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <i className="fas fa-chart-area text-green-500"></i>
+                Recent Transactions
               </h2>
-              <Link to="/admin/transactions" className="btn btn-secondary btn-sm">
-                👁️ View All
-              </Link>
+              <a href="/admin/transactions" className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center gap-2">
+                <i className="fas fa-eye"></i>
+                View All
+              </a>
             </div>
-            <div className="transactions-list">
+            <div className="max-h-96 overflow-y-auto">
               {recentTransactions.length > 0 ? (
                 recentTransactions.map((transaction) => (
-                  <div key={transaction.id_transaksi} className="transaction-item">
-                    <div className="transaction-info">
-                      <div className="transaction-id">
-                        #{transaction.id_transaksi}
+                  <div key={transaction.id_transaksi} className="p-6 border-b hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200 hover:translate-x-1">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-bold text-gray-800 text-sm">#{transaction.id_transaksi}</div>
+                        <div className="text-gray-600 text-xs mt-1">{transaction.user_nama}</div>
+                        <div className="text-gray-500 text-xs">{new Date(transaction.tanggal_transaksi).toLocaleDateString('id-ID')}</div>
                       </div>
-                      <div className="transaction-user">
-                        {transaction.user_nama}
-                      </div>
-                      <div className="transaction-date">
-                        {new Date(transaction.tanggal_transaksi).toLocaleDateString('id-ID')}
-                      </div>
-                    </div>
-                    <div className="transaction-details">
-                      <div className="transaction-amount">
-                        Rp {transaction.total_harga.toLocaleString()}
-                      </div>
-                      <div className={`transaction-status ${transaction.status_pembayaran}`}>
-                        {transaction.status_pembayaran}
+                      <div className="text-right">
+                        <div className="font-bold text-gray-800 text-sm">Rp {transaction.total_harga.toLocaleString()}</div>
+                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-2 ${
+                          transaction.status_pembayaran === 'completed' ? 'bg-green-100 text-green-600 border border-green-200' :
+                          transaction.status_pembayaran === 'pending' ? 'bg-orange-100 text-orange-600 border border-orange-200' :
+                          'bg-purple-100 text-purple-600 border border-purple-200'
+                        }`}>
+                          {transaction.status_pembayaran}
+                        </span>
                       </div>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="no-data">
-                  <span className="empty-icon">🛒</span>
+                <div className="p-12 text-center text-gray-500">
+                  <i className="fas fa-shopping-cart text-4xl text-gray-300 mb-4"></i>
                   <p>No recent transactions</p>
                 </div>
               )}
             </div>
           </div>
-        </div>
 
-        {/* Low Stock Alert */}
-        <div className="dashboard-section">
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">
-                ⚠️ Low Stock Alert
+          {/* Low Stock Alert */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <i className="fas fa-exclamation-triangle text-orange-500"></i>
+                Low Stock Alert
               </h2>
-              <Link to="/admin/products" className="btn btn-warning btn-sm">
-                📦 Manage Stock
-              </Link>
+              <a href="/admin/products" className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center gap-2">
+                <i className="fas fa-box"></i>
+                Manage
+              </a>
             </div>
-            <div className="low-stock-list">
+            <div className="max-h-96 overflow-y-auto">
               {lowStockProducts.length > 0 ? (
                 lowStockProducts.map((product) => (
-                  <div key={product.id_product} className="low-stock-item">
-                    <div className="product-info">
-                      <div className="product-name">{product.nama_product}</div>
-                      <div className="product-price">
-                        Rp {product.harga.toLocaleString()}
+                  <div key={product.id_product} className="p-6 border-b hover:bg-gradient-to-r hover:from-orange-50 hover:to-red-50 transition-all duration-200">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <div className="font-semibold text-gray-800">{product.nama_product}</div>
+                        <div className="text-gray-600 text-sm">Rp {product.harga.toLocaleString()}</div>
                       </div>
-                    </div>
-                    <div className="stock-info">
-                      <span className={`stock-badge ${product.stock === 0 ? 'out-of-stock' : 'low-stock'}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        product.stock === 0 ? 'bg-red-100 text-red-600 border border-red-200' : 'bg-orange-100 text-orange-600 border border-orange-200'
+                      }`}>
                         {product.stock === 0 ? 'Out of Stock' : `${product.stock} left`}
                       </span>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="no-data">
-                  <span className="empty-icon">📦</span>
+                <div className="p-12 text-center text-gray-500">
+                  <i className="fas fa-box text-4xl text-gray-300 mb-4"></i>
                   <p>All products have sufficient stock</p>
                 </div>
               )}
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Sales Chart */}
-      {salesData.length > 0 && (
-        <div className="sales-chart-section">
-          <div className="card">
-            <div className="card-header">
-              <h2 className="card-title">
-                📊 Sales Overview (Last 7 Days)
+        {/* Sales Chart */}
+        {salesData.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div className="bg-gradient-to-r from-gray-50 to-white p-6 border-b flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-3">
+                <i className="fas fa-chart-bar text-purple-500"></i>
+                Sales Overview (Last 7 Days)
               </h2>
-              <Link to="/admin/reports" className="btn btn-secondary btn-sm">
-                📥 Export Report
-              </Link>
+              <a href="/admin/reports" className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm transition-colors duration-200 flex items-center gap-2">
+                <i className="fas fa-download"></i>
+                Export Report
+              </a>
             </div>
-            <div className="chart-container">
-              <div className="simple-chart">
+            <div className="p-6">
+              <div className="flex items-end justify-between gap-4 h-64 bg-gradient-to-t from-purple-50 to-transparent rounded-xl p-4">
                 {salesData.map((data, index) => (
-                  <div key={index} className="chart-bar">
+                  <div key={index} className="flex flex-col items-center gap-2 flex-1">
                     <div 
-                      className="bar" 
+                      className="w-full bg-gradient-to-t from-purple-500 to-purple-400 rounded-t-lg shadow-lg hover:from-orange-500 hover:to-orange-400 transition-all duration-300 hover:scale-105"
                       style={{ 
-                        height: `${(data.daily_revenue / Math.max(...salesData.map(d => d.daily_revenue))) * 100}%` 
+                        height: `${(data.daily_revenue / Math.max(...salesData.map(d => d.daily_revenue))) * 200}px`,
+                        minHeight: '8px'
                       }}
                     ></div>
-                    <div className="bar-label">
+                    <div className="text-xs text-gray-600 font-semibold">
                       {new Date(data.date).toLocaleDateString('id-ID', { 
                         month: 'short', 
                         day: 'numeric' 
                       })}
                     </div>
-                    <div className="bar-value">
+                    <div className="text-xs text-gray-500 font-bold">
                       Rp {(data.daily_revenue / 1000000).toFixed(1)}M
                     </div>
                   </div>
@@ -338,505 +349,9 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      <style jsx>{`
-        .admin-dashboard {
-          padding: 0;
-          min-height: 100vh;
-        }
-
-        .loading-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 50vh;
-          text-align: center;
-        }
-
-        .spinner {
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f3f3f3;
-          border-top: 4px solid #667eea;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .spinning {
-          animation: spin 1s linear infinite;
-        }
-
-        .error-container {
-          padding: 2rem;
-          text-align: center;
-        }
-
-        .alert {
-          padding: 1rem 1.5rem;
-          border-radius: 8px;
-          margin-bottom: 1rem;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-          max-width: 400px;
-          margin: 0 auto;
-        }
-
-        .alert-error {
-          background: #fee2e2;
-          border: 1px solid #fecaca;
-          color: #991b1b;
-        }
-
-        .dashboard-header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          border-radius: 16px;
-          padding: 2.5rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-        }
-
-        .header-text {
-          flex: 1;
-        }
-
-        .dashboard-title {
-          font-size: 2.5rem;
-          font-weight: 800;
-          margin-bottom: 0.5rem;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .dashboard-subtitle {
-          font-size: 1.125rem;
-          opacity: 0.9;
-          margin: 0;
-          font-weight: 300;
-        }
-
-        .header-actions {
-          display: flex;
-          gap: 1rem;
-          align-items: center;
-        }
-
-        .btn {
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          padding: 10px 20px;
-          font-size: 14px;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        .btn-primary {
-          background: rgba(255, 255, 255, 0.15);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          color: white;
-          backdrop-filter: blur(10px);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: rgba(255, 255, 255, 0.25);
-          transform: translateY(-2px);
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #5a6268;
-          transform: translateY(-1px);
-        }
-
-        .btn-warning {
-          background: #ffc107;
-          color: #212529;
-        }
-
-        .btn-sm {
-          padding: 6px 12px;
-          font-size: 12px;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 1.5rem;
-          margin-bottom: 2rem;
-        }
-
-        .stat-card {
-          background: white;
-          border-radius: 16px;
-          padding: 2rem;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          transition: all 0.3s ease;
-          position: relative;
-          overflow: hidden;
-          border-left: 4px solid;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-card.blue { border-left-color: #3b82f6; }
-        .stat-card.green { border-left-color: #10b981; }
-        .stat-card.purple { border-left-color: #8b5cf6; }
-        .stat-card.orange { border-left-color: #f59e0b; }
-
-        .stat-content {
-          position: relative;
-          z-index: 1;
-          margin-bottom: 1rem;
-        }
-
-        .stat-header {
-          display: flex;
-          align-items: flex-start;
-          gap: 1.5rem;
-        }
-
-        .stat-icon {
-          width: 56px;
-          height: 56px;
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.75rem;
-          color: white;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-card.blue .stat-icon { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-        .stat-card.green .stat-icon { background: linear-gradient(135deg, #10b981, #047857); }
-        .stat-card.purple .stat-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-        .stat-card.orange .stat-icon { background: linear-gradient(135deg, #f59e0b, #d97706); }
-
-        .stat-info {
-          flex: 1;
-        }
-
-        .stat-value {
-          font-size: 2rem;
-          font-weight: 800;
-          color: #1f2937;
-          margin: 0 0 0.25rem 0;
-          line-height: 1;
-        }
-
-        .stat-title {
-          color: #6b7280;
-          font-size: 0.875rem;
-          margin: 0;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          font-weight: 600;
-        }
-
-        .stat-link {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #6366f1;
-          text-decoration: none;
-          font-size: 0.875rem;
-          font-weight: 600;
-          padding-top: 1rem;
-          border-top: 1px solid #f3f4f6;
-          transition: color 0.2s;
-        }
-
-        .stat-link:hover {
-          color: #4f46e5;
-        }
-
-        .quick-actions-section {
-          margin-bottom: 2rem;
-        }
-
-        .section-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin-bottom: 1.5rem;
-        }
-
-        .quick-actions-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-        }
-
-        .quick-action-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 1.5rem;
-          background: white;
-          border-radius: 12px;
-          text-decoration: none;
-          color: #374151;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-          transition: all 0.3s ease;
-          border: 1px solid #e5e7eb;
-        }
-
-        .quick-action-item:hover:not(:disabled) {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-          border-color: #6366f1;
-        }
-
-        .action-icon {
-          font-size: 1.5rem;
-          color: #6366f1;
-        }
-
-        .dashboard-content {
-          display: grid;
-          grid-template-columns: 1.5fr 1fr;
-          gap: 2rem;
-          margin-bottom: 2rem;
-        }
-
-        .card {
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-          overflow: hidden;
-        }
-
-        .card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.5rem;
-          border-bottom: 1px solid #f3f4f6;
-          background: #fafbfc;
-        }
-
-        .card-title {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin: 0;
-        }
-
-        .transactions-list,
-        .low-stock-list {
-          padding: 0;
-          max-height: 400px;
-          overflow-y: auto;
-        }
-
-        .transaction-item,
-        .low-stock-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 1.25rem 1.5rem;
-          border-bottom: 1px solid #f3f4f6;
-        }
-
-        .transaction-item:hover,
-        .low-stock-item:hover {
-          background-color: #f9fafb;
-        }
-
-        .transaction-info,
-        .product-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .transaction-id,
-        .product-name {
-          font-weight: 700;
-          color: #1f2937;
-          font-size: 0.875rem;
-        }
-
-        .transaction-user,
-        .transaction-date,
-        .product-price {
-          font-size: 0.75rem;
-          color: #6b7280;
-        }
-
-        .transaction-details,
-        .stock-info {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 0.5rem;
-        }
-
-        .transaction-amount {
-          font-weight: 700;
-          color: #1f2937;
-          font-size: 0.875rem;
-        }
-
-        .transaction-status,
-        .stock-badge {
-          padding: 0.25rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.675rem;
-          font-weight: 600;
-          text-transform: uppercase;
-        }
-
-        .transaction-status.completed {
-          background: #d1fae5;
-          color: #065f46;
-        }
-
-        .transaction-status.pending {
-          background: #fef3c7;
-          color: #92400e;
-        }
-
-        .transaction-status.processing {
-          background: #e0e7ff;
-          color: #3730a3;
-        }
-
-        .stock-badge.low-stock {
-          background: #fef3c7;
-          color: #92400e;
-        }
-
-        .stock-badge.out-of-stock {
-          background: #fee2e2;
-          color: #991b1b;
-        }
-
-        .no-data {
-          padding: 3rem 1.5rem;
-          text-align: center;
-          color: #6b7280;
-        }
-
-        .empty-icon {
-          font-size: 2.5rem;
-          color: #d1d5db;
-          margin-bottom: 1rem;
-          display: block;
-        }
-
-        .sales-chart-section {
-          margin-bottom: 2rem;
-        }
-
-        .chart-container {
-          padding: 2rem;
-        }
-
-        .simple-chart {
-          display: flex;
-          align-items: flex-end;
-          gap: 1rem;
-          height: 200px;
-          padding: 1rem 0;
-        }
-
-        .chart-bar {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .bar {
-          width: 100%;
-          background: linear-gradient(to top, #3b82f6, #60a5fa);
-          border-radius: 4px 4px 0 0;
-          min-height: 4px;
-          transition: all 0.3s ease;
-        }
-
-        .chart-bar:hover .bar {
-          background: linear-gradient(to top, #1d4ed8, #3b82f6);
-        }
-
-        .bar-label {
-          font-size: 0.75rem;
-          color: #6b7280;
-          font-weight: 500;
-        }
-
-        .bar-value {
-          font-size: 0.675rem;
-          color: #9ca3af;
-          font-weight: 600;
-        }
-
-        @media (max-width: 1200px) {
-          .dashboard-content {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .dashboard-header {
-            padding: 2rem 1.5rem;
-          }
-
-          .header-content {
-            flex-direction: column;
-            gap: 1.5rem;
-          }
-
-          .dashboard-title {
-            font-size: 2rem;
-          }
-
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-
-          .quick-actions-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-      `}</style>
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 

@@ -1,11 +1,6 @@
 // src/employee/pages/HistoryPage.js
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FiClock, FiEye, FiCalendar, FiDollarSign, 
-  FiCheck, FiX, FiAlertCircle, FiShoppingBag,
-  FiChevronDown, FiChevronUp 
-} from 'react-icons/fi';
 import { transactionAPI } from '../../shared/services/api';
 import Loading from '../../shared/components/Loading';
 
@@ -60,26 +55,26 @@ const HistoryPage = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'completed':
-        return <FiCheck className="status-icon success" />;
+        return 'fas fa-check-circle';
       case 'pending':
-        return <FiAlertCircle className="status-icon warning" />;
+        return 'fas fa-clock';
       case 'failed':
-        return <FiX className="status-icon error" />;
+        return 'fas fa-times-circle';
       default:
-        return <FiAlertCircle className="status-icon" />;
+        return 'fas fa-question-circle';
     }
   };
 
-  const getStatusClass = (status) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'completed';
+        return '#8FD14F';
       case 'pending':
-        return 'pending';
+        return '#FF6600';
       case 'failed':
-        return 'failed';
+        return '#ef4444';
       default:
-        return 'unknown';
+        return '#6b7280';
     }
   };
 
@@ -107,72 +102,120 @@ const HistoryPage = () => {
   const TransactionCard = ({ transaction }) => {
     const isExpanded = expandedTransaction === transaction.id_transaksi;
     const formattedDate = formatDate(transaction.tanggal_transaksi);
+    const statusColor = getStatusColor(transaction.status_pembayaran);
 
     return (
-      <div className="transaction-card">
-        <div className="transaction-header" onClick={() => toggleTransactionDetails(transaction.id_transaksi)}>
-          <div className="transaction-main">
-            <div className="transaction-id">
-              <FiShoppingBag className="transaction-icon" />
-              <span>Order #{transaction.id_transaksi}</span>
-            </div>
-            <div className="transaction-date">
-              <FiCalendar />
-              <span>{formattedDate.date} at {formattedDate.time}</span>
+      <div style={styles.transactionCard}>
+        <div 
+          style={styles.transactionHeader} 
+          onClick={() => toggleTransactionDetails(transaction.id_transaksi)}
+        >
+          <div style={styles.transactionMain}>
+            <div style={styles.transactionId}>
+              <div style={styles.orderIconContainer}>
+                <i className="fas fa-receipt" style={styles.orderIcon}></i>
+              </div>
+              <div>
+                <div style={styles.orderNumber}>Order #{transaction.id_transaksi}</div>
+                <div style={styles.transactionDate}>
+                  <i className="fas fa-calendar-alt" style={styles.dateIcon}></i>
+                  {formattedDate.date} at {formattedDate.time}
+                </div>
+              </div>
             </div>
           </div>
           
-          <div className="transaction-summary">
-            <div className="transaction-amount">
-              <FiDollarSign />
-              <span>Rp {transaction.total_harga.toLocaleString()}</span>
+          <div style={styles.transactionSummary}>
+            <div style={styles.transactionAmount}>
+              Rp {transaction.total_harga.toLocaleString()}
             </div>
-            <div className={`transaction-status ${getStatusClass(transaction.status_pembayaran)}`}>
-              {getStatusIcon(transaction.status_pembayaran)}
-              <span>{transaction.status_pembayaran}</span>
+            <div style={{
+              ...styles.transactionStatus,
+              backgroundColor: `${statusColor}20`,
+              color: statusColor
+            }}>
+              <i className={getStatusIcon(transaction.status_pembayaran)} style={styles.statusIcon}></i>
+              {transaction.status_pembayaran}
             </div>
           </div>
 
-          <div className="expand-icon">
-            {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
+          <div style={styles.expandIcon}>
+            <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
           </div>
         </div>
 
         {isExpanded && (
-          <div className="transaction-details">
-            <div className="details-grid">
-              <div className="detail-item">
-                <label>Payment Method:</label>
-                <span>{transaction.metode_pembayaran}</span>
+          <div style={styles.transactionDetails}>
+            <div style={styles.detailsHeader}>
+              <h4 style={styles.detailsTitle}>
+                <i className="fas fa-info-circle" style={styles.detailsIcon}></i>
+                Transaction Details
+              </h4>
+            </div>
+            
+            <div style={styles.detailsGrid}>
+              <div style={styles.detailItem}>
+                <div style={styles.detailLabel}>
+                  <i className="fas fa-credit-card" style={styles.detailIcon}></i>
+                  Payment Method
+                </div>
+                <div style={styles.detailValue}>{transaction.metode_pembayaran}</div>
               </div>
-              <div className="detail-item">
-                <label>Transaction Date:</label>
-                <span>{formattedDate.date} {formattedDate.time}</span>
+              
+              <div style={styles.detailItem}>
+                <div style={styles.detailLabel}>
+                  <i className="fas fa-calendar" style={styles.detailIcon}></i>
+                  Transaction Date
+                </div>
+                <div style={styles.detailValue}>{formattedDate.date} {formattedDate.time}</div>
               </div>
-              <div className="detail-item">
-                <label>Total Amount:</label>
-                <span className="amount">Rp {transaction.total_harga.toLocaleString()}</span>
+              
+              <div style={styles.detailItem}>
+                <div style={styles.detailLabel}>
+                  <i className="fas fa-money-bill-wave" style={styles.detailIcon}></i>
+                  Total Amount
+                </div>
+                <div style={{...styles.detailValue, ...styles.amountValue}}>
+                  Rp {transaction.total_harga.toLocaleString()}
+                </div>
               </div>
-              <div className="detail-item">
-                <label>Status:</label>
-                <span className={`status-badge ${getStatusClass(transaction.status_pembayaran)}`}>
-                  {getStatusIcon(transaction.status_pembayaran)}
+              
+              <div style={styles.detailItem}>
+                <div style={styles.detailLabel}>
+                  <i className="fas fa-flag" style={styles.detailIcon}></i>
+                  Status
+                </div>
+                <div style={{
+                  ...styles.statusBadge,
+                  backgroundColor: `${statusColor}20`,
+                  color: statusColor
+                }}>
+                  <i className={getStatusIcon(transaction.status_pembayaran)} style={styles.badgeIcon}></i>
                   {transaction.status_pembayaran}
-                </span>
+                </div>
               </div>
             </div>
 
             {transaction.items && transaction.items.length > 0 && (
-              <div className="transaction-items">
-                <h4>Items Ordered:</h4>
-                <div className="items-list">
+              <div style={styles.transactionItems}>
+                <h4 style={styles.itemsTitle}>
+                  <i className="fas fa-shopping-bag" style={styles.itemsIcon}></i>
+                  Items Ordered ({transaction.items.length})
+                </h4>
+                <div style={styles.itemsList}>
                   {transaction.items.map((item, index) => (
-                    <div key={index} className="item-row">
-                      <div className="item-info">
-                        <span className="item-name">{item.nama_product}</span>
-                        <span className="item-quantity">Qty: {item.jumlah}</span>
+                    <div key={index} style={styles.itemRow}>
+                      <div style={styles.itemImageContainer}>
+                        <i className="fas fa-box" style={styles.itemImage}></i>
                       </div>
-                      <div className="item-price">
+                      <div style={styles.itemInfo}>
+                        <div style={styles.itemName}>{item.nama_product}</div>
+                        <div style={styles.itemQuantity}>
+                          <i className="fas fa-times" style={styles.quantityIcon}></i>
+                          Quantity: {item.jumlah}
+                        </div>
+                      </div>
+                      <div style={styles.itemPrice}>
                         Rp {(item.harga * item.jumlah).toLocaleString()}
                       </div>
                     </div>
@@ -202,19 +245,27 @@ const HistoryPage = () => {
     }
 
     return (
-      <div className="pagination">
+      <div style={styles.pagination}>
         <button
-          className="pagination-btn"
+          style={{
+            ...styles.paginationBtn,
+            opacity: currentPage === 1 ? 0.5 : 1,
+            cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+          }}
           onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
         >
+          <i className="fas fa-chevron-left" style={styles.paginationIcon}></i>
           Previous
         </button>
         
         {pages.map(page => (
           <button
             key={page}
-            className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+            style={{
+              ...styles.paginationBtn,
+              ...(currentPage === page ? styles.paginationBtnActive : {})
+            }}
             onClick={() => setCurrentPage(page)}
           >
             {page}
@@ -222,451 +273,498 @@ const HistoryPage = () => {
         ))}
         
         <button
-          className="pagination-btn"
+          style={{
+            ...styles.paginationBtn,
+            opacity: currentPage === totalPages ? 0.5 : 1,
+            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+          }}
           onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
           disabled={currentPage === totalPages}
         >
           Next
+          <i className="fas fa-chevron-right" style={styles.paginationIcon}></i>
         </button>
       </div>
     );
   };
 
   return (
-    <div className="history-page">
-      <div className="page-header">
-        <h1 className="page-title">
-          <FiClock />
-          Order History
-        </h1>
-        <p className="page-subtitle">View all your past transactions and orders</p>
-      </div>
-
-      {successMessage && (
-        <div className="alert alert-success">
-          <FiCheck /> {successMessage}
-        </div>
-      )}
-
-      {error && (
-        <div className="alert alert-error">
-          {error}
-        </div>
-      )}
-
-      {loading ? (
-        <Loading message="Loading transaction history..." />
-      ) : (
-        <>
-          {transactions.length > 0 ? (
-            <>
-              <div className="transactions-container">
-                {transactions.map(transaction => (
-                  <TransactionCard key={transaction.id_transaksi} transaction={transaction} />
-                ))}
-              </div>
-              
-              {totalPages > 1 && <Pagination />}
-            </>
-          ) : (
-            <div className="no-transactions">
-              <FiShoppingBag className="empty-icon" />
-              <h3>No transactions found</h3>
-              <p>You haven't made any orders yet. Start shopping to see your transaction history here.</p>
-              <Link to="/employee/shop" className="btn btn-primary">
-                Start Shopping
-              </Link>
+    <div style={styles.historyPage}>
+      {/* FontAwesome CDN */}
+      <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+      />
+      
+      <div style={styles.container}>
+        {/* Header */}
+        <div style={styles.pageHeader}>
+          <div style={styles.headerContent}>
+            <div style={styles.headerText}>
+              <h1 style={styles.pageTitle}>
+                <i className="fas fa-history" style={styles.titleIcon}></i>
+                Order History
+              </h1>
+              <p style={styles.pageSubtitle}>View all your past transactions and orders</p>
             </div>
-          )}
-        </>
-      )}
+            <div style={styles.headerStats}>
+              <div style={styles.statCard}>
+                <div style={styles.statValue}>{transactions.length}</div>
+                <div style={styles.statLabel}>Total Orders</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <style jsx>{`
-        .history-page {
-          padding: 0;
-        }
+        {/* Messages */}
+        {successMessage && (
+          <div style={styles.alertSuccess}>
+            <i className="fas fa-check-circle" style={styles.alertIcon}></i>
+            {successMessage}
+          </div>
+        )}
 
-        .page-header {
-          background: white;
-          border-radius: 12px;
-          padding: 2rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+        {error && (
+          <div style={styles.alertError}>
+            <i className="fas fa-exclamation-triangle" style={styles.alertIcon}></i>
+            {error}
+          </div>
+        )}
 
-        .page-title {
-          font-size: 2rem;
-          font-weight: 700;
-          color: #333;
-          margin-bottom: 0.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .page-subtitle {
-          color: #666;
-          font-size: 1rem;
-          margin: 0;
-        }
-
-        .alert {
-          padding: 12px 16px;
-          border-radius: 8px;
-          margin-bottom: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-weight: 500;
-        }
-
-        .alert-success {
-          background: #d4edda;
-          border: 1px solid #c3e6cb;
-          color: #155724;
-        }
-
-        .alert-error {
-          background: #f8d7da;
-          border: 1px solid #f5c6cb;
-          color: #721c24;
-        }
-
-        .transactions-container {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-          margin-bottom: 2rem;
-        }
-
-        .transaction-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-          transition: all 0.2s;
-        }
-
-        .transaction-card:hover {
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .transaction-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 1.5rem;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        .transaction-header:hover {
-          background: #f8f9fa;
-        }
-
-        .transaction-main {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          flex: 1;
-        }
-
-        .transaction-id {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-weight: 600;
-          color: #333;
-          font-size: 1.125rem;
-        }
-
-        .transaction-icon {
-          color: #007bff;
-        }
-
-        .transaction-date {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: #666;
-          font-size: 0.875rem;
-        }
-
-        .transaction-summary {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 0.5rem;
-          margin-right: 1rem;
-        }
-
-        .transaction-amount {
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-          font-weight: 700;
-          color: #333;
-          font-size: 1.125rem;
-        }
-
-        .transaction-status {
-          display: flex;
-          align-items: center;
-          gap: 0.375rem;
-          padding: 0.375rem 0.75rem;
-          border-radius: 20px;
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-
-        .transaction-status.completed {
-          background: #d4edda;
-          color: #155724;
-        }
-
-        .transaction-status.pending {
-          background: #fff3cd;
-          color: #856404;
-        }
-
-        .transaction-status.failed {
-          background: #f8d7da;
-          color: #721c24;
-        }
-
-        .status-icon {
-          font-size: 0.875rem;
-        }
-
-        .expand-icon {
-          color: #666;
-          font-size: 1.25rem;
-        }
-
-        .transaction-details {
-          border-top: 1px solid #f0f0f0;
-          padding: 1.5rem;
-          background: #f8f9fa;
-        }
-
-        .details-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .detail-item {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .detail-item label {
-          font-size: 0.875rem;
-          color: #666;
-          font-weight: 500;
-        }
-
-        .detail-item span {
-          font-weight: 600;
-          color: #333;
-        }
-
-        .detail-item .amount {
-          color: #007bff;
-          font-size: 1.125rem;
-        }
-
-        .status-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.375rem;
-          padding: 0.25rem 0.75rem;
-          border-radius: 12px;
-          font-size: 0.75rem;
-          font-weight: 600;
-          text-transform: uppercase;
-        }
-
-        .transaction-items h4 {
-          color: #333;
-          margin: 0 0 1rem 0;
-          font-size: 1rem;
-        }
-
-        .items-list {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
-
-        .item-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0.75rem;
-          background: white;
-          border-radius: 8px;
-          border: 1px solid #e9ecef;
-        }
-
-        .item-info {
-          display: flex;
-          flex-direction: column;
-          gap: 0.25rem;
-        }
-
-        .item-name {
-          font-weight: 600;
-          color: #333;
-        }
-
-        .item-quantity {
-          font-size: 0.875rem;
-          color: #666;
-        }
-
-        .item-price {
-          font-weight: 600;
-          color: #007bff;
-        }
-
-        .pagination {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          margin-top: 2rem;
-        }
-
-        .pagination-btn {
-          padding: 8px 12px;
-          border: 1px solid #ddd;
-          background: white;
-          cursor: pointer;
-          border-radius: 6px;
-          color: #333;
-          font-size: 14px;
-          transition: all 0.2s;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-          background: #f8f9fa;
-          border-color: #007bff;
-        }
-
-        .pagination-btn.active {
-          background: #007bff;
-          color: white;
-          border-color: #007bff;
-        }
-
-        .pagination-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .no-transactions {
-          text-align: center;
-          padding: 4rem 2rem;
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .empty-icon {
-          font-size: 4rem;
-          color: #ddd;
-          margin-bottom: 1.5rem;
-        }
-
-        .no-transactions h3 {
-          color: #333;
-          margin-bottom: 0.5rem;
-        }
-
-        .no-transactions p {
-          color: #666;
-          margin-bottom: 2rem;
-          line-height: 1.6;
-        }
-
-        .btn {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 12px 24px;
-          border: none;
-          border-radius: 8px;
-          font-weight: 500;
-          text-decoration: none;
-          transition: all 0.2s;
-          cursor: pointer;
-        }
-
-        .btn-primary {
-          background: #007bff;
-          color: white;
-        }
-
-        .btn-primary:hover {
-          background: #0056b3;
-          transform: translateY(-1px);
-        }
-
-        @media (max-width: 768px) {
-          .page-header {
-            padding: 1.5rem;
-          }
-
-          .page-title {
-            font-size: 1.5rem;
-          }
-
-          .transaction-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem;
-          }
-
-          .transaction-summary {
-            width: 100%;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            margin-right: 0;
-          }
-
-          .transaction-details {
-            padding: 1rem;
-          }
-
-          .details-grid {
-            grid-template-columns: 1fr;
-            gap: 0.75rem;
-          }
-
-          .item-row {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-          }
-
-          .item-price {
-            align-self: flex-end;
-          }
-
-          .no-transactions {
-            padding: 2rem 1rem;
-          }
-        }
-      `}</style>
+        {/* Content */}
+        {loading ? (
+          <div style={styles.loadingContainer}>
+            <Loading message="Loading transaction history..." />
+          </div>
+        ) : (
+          <>
+            {transactions.length > 0 ? (
+              <>
+                <div style={styles.transactionsContainer}>
+                  {transactions.map(transaction => (
+                    <TransactionCard key={transaction.id_transaksi} transaction={transaction} />
+                  ))}
+                </div>
+                
+                {totalPages > 1 && <Pagination />}
+              </>
+            ) : (
+              <div style={styles.noTransactions}>
+                <i className="fas fa-shopping-bag" style={styles.emptyIcon}></i>
+                <h3 style={styles.emptyTitle}>No transactions found</h3>
+                <p style={styles.emptyText}>
+                  You haven't made any orders yet. Start shopping to see your transaction history here.
+                </p>
+                <Link to="/employee/shop" style={styles.startShoppingBtn}>
+                  <i className="fas fa-shopping-cart" style={styles.buttonIcon}></i>
+                  Start Shopping
+                </Link>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
+};
+
+// Styles object
+const styles = {
+  historyPage: {
+    minHeight: '100vh',
+    backgroundColor: '#F5F5F5',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  },
+  container: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '24px'
+  },
+  pageHeader: {
+    background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)',
+    borderRadius: '20px',
+    padding: '32px',
+    marginBottom: '24px',
+    color: 'white',
+    position: 'relative',
+    overflow: 'hidden'
+  },
+  headerContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 10,
+    flexWrap: 'wrap',
+    gap: '24px'
+  },
+  headerText: {
+    flex: 1
+  },
+  pageTitle: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    margin: '0 0 8px 0',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  titleIcon: {
+    color: 'white'
+  },
+  pageSubtitle: {
+    fontSize: '1.125rem',
+    margin: 0,
+    opacity: 0.9
+  },
+  headerStats: {
+    display: 'flex',
+    gap: '24px'
+  },
+  statCard: {
+    textAlign: 'center',
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '12px',
+    padding: '16px 24px',
+    backdropFilter: 'blur(10px)'
+  },
+  statValue: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  statLabel: {
+    fontSize: '0.875rem',
+    opacity: 0.9
+  },
+  alertSuccess: {
+    padding: '16px 20px',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    background: 'rgba(143, 209, 79, 0.2)',
+    border: '1px solid #8FD14F',
+    color: '#8FD14F',
+    fontWeight: '500'
+  },
+  alertError: {
+    padding: '16px 20px',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    background: 'rgba(239, 68, 68, 0.2)',
+    border: '1px solid #ef4444',
+    color: '#ef4444',
+    fontWeight: '500'
+  },
+  alertIcon: {
+    fontSize: '1.125rem'
+  },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '400px'
+  },
+  transactionsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    marginBottom: '32px'
+  },
+  transactionCard: {
+    background: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease'
+  },
+  transactionHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '24px',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease'
+  },
+  transactionMain: {
+    flex: 1
+  },
+  transactionId: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px'
+  },
+  orderIconContainer: {
+    width: '48px',
+    height: '48px',
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  orderIcon: {
+    color: 'white',
+    fontSize: '1.25rem'
+  },
+  orderNumber: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '4px'
+  },
+  transactionDate: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    color: '#666',
+    fontSize: '0.875rem'
+  },
+  dateIcon: {
+    color: '#604CC3'
+  },
+  transactionSummary: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: '8px',
+    marginRight: '16px'
+  },
+  transactionAmount: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#FF6600'
+  },
+  transactionStatus: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '6px 12px',
+    borderRadius: '20px',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  statusIcon: {
+    fontSize: '0.875rem'
+  },
+  expandIcon: {
+    color: '#666',
+    fontSize: '1.25rem'
+  },
+  transactionDetails: {
+    borderTop: '1px solid #f0f0f0',
+    background: '#f8f9fa'
+  },
+  detailsHeader: {
+    padding: '20px 24px 0',
+    borderBottom: '1px solid #e9ecef',
+    marginBottom: '20px'
+  },
+  detailsTitle: {
+    fontSize: '1.125rem',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: '0 0 16px 0',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  detailsIcon: {
+    color: '#604CC3'
+  },
+  detailsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    padding: '0 24px 24px'
+  },
+  detailItem: {
+    background: 'white',
+    padding: '16px',
+    borderRadius: '12px',
+    border: '1px solid #e9ecef'
+  },
+  detailLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '0.875rem',
+    color: '#666',
+    fontWeight: '500',
+    marginBottom: '8px'
+  },
+  detailIcon: {
+    color: '#604CC3',
+    fontSize: '0.875rem'
+  },
+  detailValue: {
+    fontWeight: '600',
+    color: '#333',
+    fontSize: '0.875rem'
+  },
+  amountValue: {
+    color: '#FF6600',
+    fontSize: '1.125rem'
+  },
+  statusBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '4px 12px',
+    borderRadius: '12px',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    textTransform: 'uppercase'
+  },
+  badgeIcon: {
+    fontSize: '0.75rem'
+  },
+  transactionItems: {
+    padding: '0 24px 24px'
+  },
+  itemsTitle: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: '0 0 16px 0',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  itemsIcon: {
+    color: '#8FD14F'
+  },
+  itemsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px'
+  },
+  itemRow: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '16px',
+    background: 'white',
+    borderRadius: '12px',
+    border: '1px solid #e9ecef',
+    gap: '16px'
+  },
+  itemImageContainer: {
+    width: '40px',
+    height: '40px',
+    background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0
+  },
+  itemImage: {
+    color: 'white',
+    fontSize: '1rem'
+  },
+  itemInfo: {
+    flex: 1
+  },
+  itemName: {
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: '4px'
+  },
+  itemQuantity: {
+    fontSize: '0.875rem',
+    color: '#666',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  quantityIcon: {
+    fontSize: '0.75rem'
+  },
+  itemPrice: {
+    fontWeight: 'bold',
+    color: '#FF6600',
+    fontSize: '1rem'
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '32px',
+    flexWrap: 'wrap'
+  },
+  paginationBtn: {
+    padding: '12px 16px',
+    border: '1px solid #e5e7eb',
+    background: 'white',
+    cursor: 'pointer',
+    borderRadius: '8px',
+    color: '#333',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  paginationBtnActive: {
+    background: '#604CC3',
+    color: 'white',
+    borderColor: '#604CC3'
+  },
+  paginationIcon: {
+    fontSize: '0.75rem'
+  },
+  noTransactions: {
+    textAlign: 'center',
+    padding: '64px 32px',
+    background: 'white',
+    borderRadius: '20px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb'
+  },
+  emptyIcon: {
+    fontSize: '5rem',
+    color: '#d1d5db',
+    marginBottom: '24px'
+  },
+  emptyTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '8px',
+    margin: '0 0 8px 0'
+  },
+  emptyText: {
+    color: '#666',
+    marginBottom: '32px',
+    fontSize: '1rem',
+    lineHeight: '1.6',
+    margin: '0 0 32px 0'
+  },
+  startShoppingBtn: {
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    color: 'white',
+    padding: '14px 28px',
+    borderRadius: '12px',
+    textDecoration: 'none',
+    fontWeight: '600',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  buttonIcon: {
+    fontSize: '0.875rem'
+  }
 };
 
 export default HistoryPage;

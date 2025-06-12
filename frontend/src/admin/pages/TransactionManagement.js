@@ -1,9 +1,7 @@
-// src/admin/pages/TransactionManagement.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../shared/contexts/AuthContext';
 
 const TransactionManagement = () => {
-    const { user } = useAuth();
+    const user = { nama: 'Admin User' }; // Mock user
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -208,37 +206,36 @@ const TransactionManagement = () => {
 
     const getStatusBadge = (status) => {
         const statusConfig = {
-            pending: { color: '#ffc107', bg: '#fff3cd', text: 'Pending' },
-            completed: { color: '#28a745', bg: '#d4edda', text: 'Completed' },
-            cancelled: { color: '#dc3545', bg: '#f8d7da', text: 'Cancelled' },
-            shipped: { color: '#17a2b8', bg: '#d1ecf1', text: 'Shipped' },
-            processing: { color: '#6f42c1', bg: '#e2d9f3', text: 'Processing' }
+            pending: 'bg-yellow-100 text-yellow-700 border border-yellow-200',
+            completed: 'bg-green-100 text-green-700 border border-green-200',
+            cancelled: 'bg-red-100 text-red-700 border border-red-200',
+            shipped: 'bg-blue-100 text-blue-700 border border-blue-200',
+            processing: 'bg-purple-100 text-purple-700 border border-purple-200'
         };
 
-        const config = statusConfig[status] || statusConfig.pending;
+        const statusText = {
+            pending: 'Pending',
+            completed: 'Completed',
+            cancelled: 'Cancelled',
+            shipped: 'Shipped',
+            processing: 'Processing'
+        };
 
         return (
-            <span style={{
-                background: config.bg,
-                color: config.color,
-                padding: '4px 8px',
-                borderRadius: '12px',
-                fontSize: '12px',
-                fontWeight: '500'
-            }}>
-                {config.text}
+            <span className={`px-2 py-1 rounded-full text-xs font-semibold ${statusConfig[status] || statusConfig.pending}`}>
+                {statusText[status] || statusText.pending}
             </span>
         );
     };
 
     const getPaymentMethodIcon = (method) => {
         const methods = {
-            credit_card: '💳',
-            bank_transfer: '🏦',
-            e_wallet: '📱',
-            cash: '💵'
+            credit_card: 'fas fa-credit-card',
+            bank_transfer: 'fas fa-university',
+            e_wallet: 'fas fa-mobile-alt',
+            cash: 'fas fa-money-bill-wave'
         };
-        return methods[method] || '💳';
+        return methods[method] || 'fas fa-credit-card';
     };
 
     const formatCurrency = (amount) => {
@@ -261,568 +258,477 @@ const TransactionManagement = () => {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div className="spinner" style={{ width: '40px', height: '40px', margin: '0 auto 16px' }}></div>
-                    <p>Loading transactions...</p>
+            <>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-gray-600 text-lg">Loading transactions...</p>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     return (
-        <div style={{ padding: '24px', background: '#f8f9fa', minHeight: '100vh' }}>
-            {/* Header */}
-            <div style={{ marginBottom: '24px' }}>
-                <h1 style={{ margin: '0 0 8px 0', color: '#333', fontSize: '28px', fontWeight: '700' }}>
-                    📊 Transaction Management
-                </h1>
-                <p style={{ margin: 0, color: '#666' }}>
-                    Manage and monitor all customer transactions
-                </p>
-            </div>
-
-            {/* Stats Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-                <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <p style={{ margin: '0 0 4px 0', color: '#666', fontSize: '14px' }}>Total Transactions</p>
-                            <h3 style={{ margin: 0, color: '#333', fontSize: '24px', fontWeight: '700' }}>{stats.total}</h3>
+        <>
+            {/* CDN Links */}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+            
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-3xl p-8 mb-8 text-white shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full translate-y-24 -translate-x-24"></div>
+                        <div className="relative z-10">
+                            <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+                                <i className="fas fa-chart-line text-orange-400"></i>
+                                Transaction Management
+                            </h1>
+                            <p className="text-purple-100 text-lg">Manage and monitor all customer transactions</p>
                         </div>
-                        <span style={{ fontSize: '24px' }}>📈</span>
                     </div>
-                </div>
 
-                <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <p style={{ margin: '0 0 4px 0', color: '#666', fontSize: '14px' }}>Pending</p>
-                            <h3 style={{ margin: 0, color: '#ffc107', fontSize: '24px', fontWeight: '700' }}>{stats.pending}</h3>
+                    {/* Stats Cards */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-blue-500 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-gray-600 text-sm font-semibold mb-1">Total Transactions</p>
+                                    <h3 className="text-2xl font-bold text-gray-800">{stats.total}</h3>
+                                </div>
+                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white">
+                                    <i className="fas fa-chart-bar text-lg"></i>
+                                </div>
+                            </div>
                         </div>
-                        <span style={{ fontSize: '24px' }}>⏳</span>
-                    </div>
-                </div>
 
-                <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <p style={{ margin: '0 0 4px 0', color: '#666', fontSize: '14px' }}>Completed</p>
-                            <h3 style={{ margin: 0, color: '#28a745', fontSize: '24px', fontWeight: '700' }}>{stats.completed}</h3>
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-yellow-500 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-gray-600 text-sm font-semibold mb-1">Pending</p>
+                                    <h3 className="text-2xl font-bold text-yellow-600">{stats.pending}</h3>
+                                </div>
+                                <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center text-white">
+                                    <i className="fas fa-clock text-lg"></i>
+                                </div>
+                            </div>
                         </div>
-                        <span style={{ fontSize: '24px' }}>✅</span>
-                    </div>
-                </div>
 
-                <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                            <p style={{ margin: '0 0 4px 0', color: '#666', fontSize: '14px' }}>Total Revenue</p>
-                            <h3 style={{ margin: 0, color: '#28a745', fontSize: '20px', fontWeight: '700' }}>{formatCurrency(stats.totalRevenue)}</h3>
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-green-500 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-gray-600 text-sm font-semibold mb-1">Completed</p>
+                                    <h3 className="text-2xl font-bold text-green-600">{stats.completed}</h3>
+                                </div>
+                                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center text-white">
+                                    <i className="fas fa-check-circle text-lg"></i>
+                                </div>
+                            </div>
                         </div>
-                        <span style={{ fontSize: '24px' }}>💰</span>
-                    </div>
-                </div>
-            </div>
 
-            {/* Filters */}
-            <div style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
-                <h3 style={{ margin: '0 0 16px 0', color: '#333' }}>🔍 Filters</h3>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                            Status
-                        </label>
-                        <select
-                            value={filters.status}
-                            onChange={(e) => handleFilterChange('status', e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '2px solid #e9ecef',
-                                borderRadius: '6px',
-                                fontSize: '14px'
-                            }}
-                        >
-                            <option value="all">All Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="processing">Processing</option>
-                            <option value="shipped">Shipped</option>
-                            <option value="completed">Completed</option>
-                            <option value="cancelled">Cancelled</option>
-                        </select>
+                        <div className="bg-white rounded-2xl p-6 shadow-lg border-l-4 border-orange-500 hover:shadow-xl transition-shadow duration-300">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-gray-600 text-sm font-semibold mb-1">Total Revenue</p>
+                                    <h3 className="text-lg font-bold text-orange-600">{formatCurrency(stats.totalRevenue)}</h3>
+                                </div>
+                                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center text-white">
+                                    <i className="fas fa-dollar-sign text-lg"></i>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                            Search
-                        </label>
-                        <input
-                            type="text"
-                            placeholder="Transaction ID, Customer name, Email..."
-                            value={filters.search}
-                            onChange={(e) => handleFilterChange('search', e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '2px solid #e9ecef',
-                                borderRadius: '6px',
-                                fontSize: '14px',
-                                boxSizing: 'border-box'
-                            }}
-                        />
+                    {/* Filters */}
+                    <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+                        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i className="fas fa-filter text-purple-500"></i>
+                            Filters
+                        </h3>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Status</label>
+                                <select
+                                    value={filters.status}
+                                    onChange={(e) => handleFilterChange('status', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white transition-colors duration-200"
+                                >
+                                    <option value="all">All Status</option>
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="shipped">Shipped</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Search</label>
+                                <div className="relative">
+                                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                        <i className="fas fa-search"></i>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Transaction ID, Customer..."
+                                        value={filters.search}
+                                        onChange={(e) => handleFilterChange('search', e.target.value)}
+                                        className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Start Date</label>
+                                <input
+                                    type="date"
+                                    value={filters.startDate}
+                                    onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">End Date</label>
+                                <input
+                                    type="date"
+                                    value={filters.endDate}
+                                    onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                />
+                            </div>
+                        </div>
                     </div>
 
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                            Start Date
-                        </label>
-                        <input
-                            type="date"
-                            value={filters.startDate}
-                            onChange={(e) => handleFilterChange('startDate', e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '2px solid #e9ecef',
-                                borderRadius: '6px',
-                                fontSize: '14px',
-                                boxSizing: 'border-box'
-                            }}
-                        />
-                    </div>
-
-                    <div>
-                        <label style={{ display: 'block', marginBottom: '4px', fontSize: '14px', fontWeight: '500', color: '#333' }}>
-                            End Date
-                        </label>
-                        <input
-                            type="date"
-                            value={filters.endDate}
-                            onChange={(e) => handleFilterChange('endDate', e.target.value)}
-                            style={{
-                                width: '100%',
-                                padding: '8px 12px',
-                                border: '2px solid #e9ecef',
-                                borderRadius: '6px',
-                                fontSize: '14px',
-                                boxSizing: 'border-box'
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Transactions Table */}
-            <div style={{ background: 'white', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-                <div style={{ padding: '20px', borderBottom: '1px solid #eee' }}>
-                    <h3 style={{ margin: 0, color: '#333' }}>📋 Transactions ({transactions.length})</h3>
-                </div>
-
-                {error && (
-                    <div style={{ padding: '16px', background: '#f8d7da', color: '#721c24', borderLeft: '4px solid #dc3545' }}>
-                        ❌ {error}
-                    </div>
-                )}
-
-                <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                            <tr style={{ background: '#f8f9fa' }}>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Transaction ID
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Customer
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Date
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Amount
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Payment
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Status
-                                </th>
-                                <th style={{ padding: '12px', textAlign: 'center', fontWeight: '600', color: '#333', borderBottom: '1px solid #eee' }}>
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
-                                        📭 No transactions found
-                                    </td>
-                                </tr>
-                            ) : (
-                                transactions.map((transaction) => (
-                                    <tr key={transaction.id_transaksi} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                                        <td style={{ padding: '12px' }}>
-                                            <div style={{ fontWeight: '500', color: '#333', marginBottom: '4px' }}>
-                                                {transaction.id_transaksi}
-                                            </div>
-                                            <div style={{ fontSize: '12px', color: '#666' }}>
-                                                {transaction.items.length} item(s)
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            <div style={{ fontWeight: '500', color: '#333', marginBottom: '4px' }}>
-                                                {transaction.user_name}
-                                            </div>
-                                            <div style={{ fontSize: '12px', color: '#666' }}>
-                                                {transaction.user_email}
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '12px', color: '#666', fontSize: '14px' }}>
-                                            {formatDate(transaction.tanggal_transaksi)}
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            <div style={{ fontWeight: '600', color: '#333' }}>
-                                                {formatCurrency(transaction.total_amount)}
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                <span>{getPaymentMethodIcon(transaction.payment_method)}</span>
-                                                <span style={{ fontSize: '14px', color: '#666', textTransform: 'capitalize' }}>
-                                                    {transaction.payment_method.replace('_', ' ')}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td style={{ padding: '12px' }}>
-                                            {getStatusBadge(transaction.status)}
-                                        </td>
-                                        <td style={{ padding: '12px', textAlign: 'center' }}>
-                                            <button
-                                                onClick={() => {
-                                                    setSelectedTransaction(transaction);
-                                                    setShowModal(true);
-                                                }}
-                                                style={{
-                                                    background: '#007bff',
-                                                    color: 'white',
-                                                    border: 'none',
-                                                    borderRadius: '6px',
-                                                    padding: '6px 12px',
-                                                    fontSize: '12px',
-                                                    cursor: 'pointer',
-                                                    fontWeight: '500'
-                                                }}
-                                            >
-                                                👁️ View
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            {/* Transaction Detail Modal */}
-            {showModal && selectedTransaction && (
-                <div style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    background: 'rgba(0,0,0,0.5)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 1000
-                }}>
-                    <div style={{
-                        background: 'white',
-                        borderRadius: '12px',
-                        width: '90%',
-                        maxWidth: '600px',
-                        maxHeight: '90vh',
-                        overflow: 'auto'
-                    }}>
-                        <div style={{ padding: '20px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <h3 style={{ margin: 0, color: '#333' }}>
-                                📋 Transaction Details
-                            </h3>
+                    {/* Error Display */}
+                    {error && (
+                        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-6 flex justify-between items-center">
+                            <span className="text-red-700 flex items-center gap-2">
+                                <i className="fas fa-exclamation-circle"></i>
+                                {error}
+                            </span>
                             <button
-                                onClick={() => setShowModal(false)}
-                                style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    fontSize: '20px',
-                                    cursor: 'pointer',
-                                    color: '#666'
-                                }}
+                                onClick={() => setError(null)}
+                                className="text-red-500 hover:text-red-700 text-xl"
                             >
-                                ✕
+                                <i className="fas fa-times"></i>
                             </button>
                         </div>
+                    )}
 
-                        <div style={{ padding: '20px' }}>
-                            {/* Transaction Info */}
-                            <div style={{ marginBottom: '24px' }}>
-                                <h4 style={{ margin: '0 0 12px 0', color: '#333' }}>Transaction Information</h4>
-                                <div style={{ display: 'grid', gap: '8px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Transaction ID:</span>
-                                        <span style={{ fontWeight: '500' }}>{selectedTransaction.id_transaksi}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Date:</span>
-                                        <span>{formatDate(selectedTransaction.tanggal_transaksi)}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Status:</span>
-                                        {getStatusBadge(selectedTransaction.status)}
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Payment Method:</span>
-                                        <span>
-                                            {getPaymentMethodIcon(selectedTransaction.payment_method)} {selectedTransaction.payment_method.replace('_', ' ')}
-                                        </span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Total Amount:</span>
-                                        <span style={{ fontWeight: '600', color: '#28a745' }}>{formatCurrency(selectedTransaction.total_amount)}</span>
-                                    </div>
-                                </div>
-                            </div>
+                    {/* Transactions Table */}
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <div className="p-6 border-b border-gray-200">
+                            <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <i className="fas fa-list text-purple-500"></i>
+                                Transactions ({transactions.length})
+                            </h3>
+                        </div>
 
-                            {/* Customer Info */}
-                            <div style={{ marginBottom: '24px' }}>
-                                <h4 style={{ margin: '0 0 12px 0', color: '#333' }}>Customer Information</h4>
-                                <div style={{ display: 'grid', gap: '8px' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Name:</span>
-                                        <span>{selectedTransaction.user_name}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Email:</span>
-                                        <span>{selectedTransaction.user_email}</span>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <span style={{ color: '#666' }}>Shipping Address:</span>
-                                        <span style={{ textAlign: 'right', maxWidth: '60%' }}>{selectedTransaction.alamat_pengiriman}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Items */}
-                            <div style={{ marginBottom: '24px' }}>
-                                <h4 style={{ margin: '0 0 12px 0', color: '#333' }}>Items ({selectedTransaction.items.length})</h4>
-                                <div style={{ border: '1px solid #eee', borderRadius: '8px', overflow: 'hidden' }}>
-                                    {selectedTransaction.items.map((item, index) => (
-                                        <div key={index} style={{
-                                            padding: '12px',
-                                            borderBottom: index < selectedTransaction.items.length - 1 ? '1px solid #f0f0f0' : 'none',
-                                            display: 'flex',
-                                            justifyContent: 'space-between',
-                                            alignItems: 'center'
-                                        }}>
-                                            <div>
-                                                <div style={{ fontWeight: '500', marginBottom: '4px' }}>{item.nama_produk}</div>
-                                                <div style={{ fontSize: '12px', color: '#666' }}>Qty: {item.kuantitas}</div>
-                                            </div>
-                                            <div style={{ textAlign: 'right' }}>
-                                                <div style={{ fontWeight: '500' }}>{formatCurrency(item.harga)}</div>
-                                                <div style={{ fontSize: '12px', color: '#666' }}>
-                                                    Total: {formatCurrency(item.harga * item.kuantitas)}
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Transaction ID</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Customer</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Date</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Amount</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Payment</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {transactions.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                                                <div className="flex flex-col items-center gap-3">
+                                                    <i className="fas fa-inbox text-4xl text-gray-300"></i>
+                                                    <p className="text-lg">No transactions found</p>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Action Buttons */}
-                            {selectedTransaction.status === 'pending' && (
-                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                    <button
-                                        onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'processing')}
-                                        disabled={actionLoading}
-                                        style={{
-                                            background: '#6f42c1',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {actionLoading ? '⏳ Processing...' : '🔄 Mark as Processing'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'cancelled')}
-                                        disabled={actionLoading}
-                                        style={{
-                                            background: '#dc3545',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {actionLoading ? '⏳ Cancelling...' : '❌ Cancel Transaction'}
-                                    </button>
-                                </div>
-                            )}
-
-                            {selectedTransaction.status === 'processing' && (
-                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                    <button
-                                        onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'shipped')}
-                                        disabled={actionLoading}
-                                        style={{
-                                            background: '#17a2b8',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {actionLoading ? '⏳ Shipping...' : '🚚 Mark as Shipped'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'cancelled')}
-                                        disabled={actionLoading}
-                                        style={{
-                                            background: '#dc3545',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {actionLoading ? '⏳ Cancelling...' : '❌ Cancel Transaction'}
-                                    </button>
-                                </div>
-                            )}
-
-                            {selectedTransaction.status === 'shipped' && (
-                                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                                    <button
-                                        onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'completed')}
-                                        disabled={actionLoading}
-                                        style={{
-                                            background: '#28a745',
-                                            color: 'white',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            padding: '8px 16px',
-                                            fontSize: '14px',
-                                            cursor: 'pointer',
-                                            fontWeight: '500'
-                                        }}
-                                    >
-                                        {actionLoading ? '⏳ Completing...' : '✅ Mark as Completed'}
-                                    </button>
-                                </div>
-                            )}
-
-                            {(selectedTransaction.status === 'completed' || selectedTransaction.status === 'cancelled') && (
-                                <div style={{
-                                    padding: '12px',
-                                    background: selectedTransaction.status === 'completed' ? '#d4edda' : '#f8d7da',
-                                    color: selectedTransaction.status === 'completed' ? '#155724' : '#721c24',
-                                    borderRadius: '6px',
-                                    textAlign: 'center'
-                                }}>
-                                    {selectedTransaction.status === 'completed' ?
-                                        '✅ Transaction completed successfully' :
-                                        '❌ Transaction has been cancelled'
-                                    }
-                                </div>
-                            )}
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        transactions.map((transaction) => (
+                                            <tr key={transaction.id_transaksi} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                                                <td className="px-6 py-4">
+                                                    <div className="font-semibold text-gray-800 mb-1">{transaction.id_transaksi}</div>
+                                                    <div className="text-xs text-gray-500">{transaction.items.length} item(s)</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="font-semibold text-gray-800 mb-1">{transaction.user_name}</div>
+                                                    <div className="text-xs text-gray-500">{transaction.user_email}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-600 text-sm">
+                                                    {formatDate(transaction.tanggal_transaksi)}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="font-semibold text-gray-800">
+                                                        {formatCurrency(transaction.total_amount)}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-2">
+                                                        <i className={`${getPaymentMethodIcon(transaction.payment_method)} text-purple-500`}></i>
+                                                        <span className="text-sm text-gray-600 capitalize">
+                                                            {transaction.payment_method.replace('_', ' ')}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    {getStatusBadge(transaction.status)}
+                                                </td>
+                                                <td className="px-6 py-4 text-center">
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedTransaction(transaction);
+                                                            setShowModal(true);
+                                                        }}
+                                                        className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-xs font-semibold transition-colors duration-200 flex items-center gap-1 mx-auto"
+                                                    >
+                                                        <i className="fas fa-eye"></i>
+                                                        View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+
+                    {/* Transaction Detail Modal */}
+                    {showModal && selectedTransaction && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                        <i className="fas fa-receipt text-purple-500"></i>
+                                        Transaction Details
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowModal(false)}
+                                        className="text-gray-500 hover:text-gray-700 text-2xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors duration-200"
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="p-6 space-y-6">
+                                    {/* Transaction Info */}
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <i className="fas fa-info-circle text-blue-500"></i>
+                                            Transaction Information
+                                        </h4>
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Transaction ID:</span>
+                                                <span className="font-semibold text-gray-800">{selectedTransaction.id_transaksi}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Date:</span>
+                                                <span className="text-gray-800">{formatDate(selectedTransaction.tanggal_transaksi)}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Status:</span>
+                                                {getStatusBadge(selectedTransaction.status)}
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Payment Method:</span>
+                                                <span className="flex items-center gap-2">
+                                                    <i className={`${getPaymentMethodIcon(selectedTransaction.payment_method)} text-purple-500`}></i>
+                                                    <span className="capitalize">{selectedTransaction.payment_method.replace('_', ' ')}</span>
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Total Amount:</span>
+                                                <span className="font-bold text-green-600 text-lg">{formatCurrency(selectedTransaction.total_amount)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Customer Info */}
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <i className="fas fa-user text-green-500"></i>
+                                            Customer Information
+                                        </h4>
+                                        <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Name:</span>
+                                                <span className="font-semibold text-gray-800">{selectedTransaction.user_name}</span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-gray-600">Email:</span>
+                                                <span className="text-gray-800">{selectedTransaction.user_email}</span>
+                                            </div>
+                                            <div className="flex justify-between items-start">
+                                                <span className="text-gray-600">Shipping Address:</span>
+                                                <span className="text-right text-gray-800 max-w-xs">{selectedTransaction.alamat_pengiriman}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Items */}
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                            <i className="fas fa-shopping-bag text-orange-500"></i>
+                                            Items ({selectedTransaction.items.length})
+                                        </h4>
+                                        <div className="border border-gray-200 rounded-xl overflow-hidden">
+                                            {selectedTransaction.items.map((item, index) => (
+                                                <div key={index} className={`p-4 flex justify-between items-center ${index < selectedTransaction.items.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                                                    <div>
+                                                        <div className="font-semibold text-gray-800 mb-1">{item.nama_produk}</div>
+                                                        <div className="text-sm text-gray-500">Qty: {item.kuantitas}</div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="font-semibold text-gray-800">{formatCurrency(item.harga)}</div>
+                                                        <div className="text-sm text-gray-500">
+                                                            Total: {formatCurrency(item.harga * item.kuantitas)}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="pt-4 border-t border-gray-200">
+                                        {selectedTransaction.status === 'pending' && (
+                                            <div className="flex flex-wrap gap-3">
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'processing')}
+                                                    disabled={actionLoading}
+                                                    className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {actionLoading ? (
+                                                        <>
+                                                            <i className="fas fa-spinner animate-spin"></i>
+                                                            Processing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-cog"></i>
+                                                            Mark as Processing
+                                                        </>
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'cancelled')}
+                                                    disabled={actionLoading}
+                                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {actionLoading ? (
+                                                        <>
+                                                            <i className="fas fa-spinner animate-spin"></i>
+                                                            Cancelling...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-times-circle"></i>
+                                                            Cancel Transaction
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {selectedTransaction.status === 'processing' && (
+                                            <div className="flex flex-wrap gap-3">
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'shipped')}
+                                                    disabled={actionLoading}
+                                                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {actionLoading ? (
+                                                        <>
+                                                            <i className="fas fa-spinner animate-spin"></i>
+                                                            Shipping...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-shipping-fast"></i>
+                                                            Mark as Shipped
+                                                        </>
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'cancelled')}
+                                                    disabled={actionLoading}
+                                                    className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {actionLoading ? (
+                                                        <>
+                                                            <i className="fas fa-spinner animate-spin"></i>
+                                                            Cancelling...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-times-circle"></i>
+                                                            Cancel Transaction
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {selectedTransaction.status === 'shipped' && (
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => handleStatusUpdate(selectedTransaction.id_transaksi, 'completed')}
+                                                    disabled={actionLoading}
+                                                    className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                                                >
+                                                    {actionLoading ? (
+                                                        <>
+                                                            <i className="fas fa-spinner animate-spin"></i>
+                                                            Completing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <i className="fas fa-check-circle"></i>
+                                                            Mark as Completed
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
+                                        )}
+
+                                        {(selectedTransaction.status === 'completed' || selectedTransaction.status === 'cancelled') && (
+                                            <div className={`p-4 rounded-xl text-center font-semibold ${
+                                                selectedTransaction.status === 'completed' 
+                                                    ? 'bg-green-50 text-green-700 border border-green-200' 
+                                                    : 'bg-red-50 text-red-700 border border-red-200'
+                                            }`}>
+                                                {selectedTransaction.status === 'completed' ? (
+                                                    <>
+                                                        <i className="fas fa-check-circle mr-2"></i>
+                                                        Transaction completed successfully
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <i className="fas fa-times-circle mr-2"></i>
+                                                        Transaction has been cancelled
+                                                    </>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
-
-            {/* CSS for spinner */}
-            <style jsx>{`
-        .spinner {
-          border: 3px solid #f3f3f3;
-          border-top: 3px solid #007bff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        button:hover:not(:disabled) {
-          opacity: 0.9;
-          transform: translateY(-1px);
-        }
-
-        button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none !important;
-        }
-
-        table th {
-          position: sticky;
-          top: 0;
-          background: #f8f9fa;
-          z-index: 1;
-        }
-
-        @media (max-width: 768px) {
-          .table-responsive {
-            font-size: 14px;
-          }
-          
-          .modal-content {
-            width: 95%;
-            margin: 20px;
-          }
-          
-          .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          
-          .filters-grid {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .stats-grid {
-            grid-template-columns: 1fr;
-          }
-          
-          .action-buttons {
-            flex-direction: column;
-          }
-          
-          .action-buttons button {
-            width: 100%;
-          }
-        }
-      `}</style>
-        </div>
+            </div>
+        </>
     );
 };
 

@@ -107,18 +107,19 @@ const EmployeeDashboard = () => {
   // Show global error only if no data loaded at all
   if (errors.global && !hasAnyData()) {
     return (
-      <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center p-8">
-        <div className="bg-white rounded-3xl p-12 text-center shadow-2xl max-w-md w-full border border-gray-100">
-          <div className="mb-6">
-            <i className="fas fa-exclamation-triangle text-6xl text-[#FF6600] mb-4"></i>
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">Unable to Load Dashboard</h3>
-            <p className="text-gray-600 leading-relaxed">{errors.global}</p>
+      <div style={styles.errorContainer}>
+        <link 
+          rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+        />
+        <div style={styles.errorCard}>
+          <div style={styles.errorContent}>
+            <i className="fas fa-exclamation-triangle" style={styles.errorIcon}></i>
+            <h3 style={styles.errorTitle}>Unable to Load Dashboard</h3>
+            <p style={styles.errorText}>{errors.global}</p>
           </div>
-          <button 
-            onClick={handleRetry} 
-            className="bg-gradient-to-r from-[#FF6600] to-[#ff8533] text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-          >
-            <i className="fas fa-redo mr-2"></i>
+          <button onClick={handleRetry} style={styles.retryButton}>
+            <i className="fas fa-redo" style={styles.buttonIcon}></i>
             Try Again
           </button>
         </div>
@@ -126,80 +127,74 @@ const EmployeeDashboard = () => {
     );
   }
 
-  const QuickActionCard = ({ title, description, iconClass, gradientFrom, gradientTo, link, badge }) => (
-    <Link to={link} className="group block">
-      <div className={`bg-gradient-to-br ${gradientFrom} ${gradientTo} rounded-2xl p-6 text-white shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 relative overflow-hidden`}>
-        <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16"></div>
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="bg-white bg-opacity-20 rounded-xl p-3">
-              <i className={`${iconClass} text-2xl`}></i>
+  const QuickActionCard = ({ title, description, iconClass, backgroundColor, link, badge }) => (
+    <Link to={link} style={styles.quickActionLink}>
+      <div style={{...styles.quickActionCard, background: backgroundColor}}>
+        <div style={styles.cardDecorative}></div>
+        <div style={styles.cardContent}>
+          <div style={styles.cardHeader}>
+            <div style={styles.cardIconContainer}>
+              <i className={iconClass} style={styles.cardIcon}></i>
             </div>
             {badge && (
-              <div className="bg-white text-[#FF6600] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold">
+              <div style={styles.badge}>
                 {badge}
               </div>
             )}
           </div>
-          <h3 className="text-xl font-bold mb-2">{title}</h3>
-          <p className="text-white text-opacity-90 text-sm">{description}</p>
+          <h3 style={styles.cardTitle}>{title}</h3>
+          <p style={styles.cardDescription}>{description}</p>
         </div>
       </div>
     </Link>
   );
 
   const ProductCard = ({ product }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-gray-100">
-      <div className="bg-gradient-to-br from-[#8FD14F] to-[#7bc142] rounded-xl p-4 mb-4 flex items-center justify-center">
-        <i className="fas fa-box text-2xl text-white"></i>
+    <div style={styles.productCard}>
+      <div style={styles.productImageContainer}>
+        <i className="fas fa-box" style={styles.productIcon}></i>
       </div>
-      <h4 className="text-lg font-bold text-gray-800 mb-2">{product.nama_product}</h4>
-      <p className="text-2xl font-bold text-[#FF6600] mb-1">Rp {product.harga?.toLocaleString() || '0'}</p>
-      <p className="text-gray-600 text-sm">{product.stock || 0} in stock</p>
+      <h4 style={styles.productName}>{product.nama_product}</h4>
+      <p style={styles.productPrice}>Rp {product.harga?.toLocaleString() || '0'}</p>
+      <p style={styles.productStock}>{product.stock || 0} in stock</p>
     </div>
   );
 
   const ErrorSection = ({ title, error, onRetry }) => (
-    <div className="text-center py-12">
-      <i className="fas fa-exclamation-triangle text-4xl text-[#FF6600] mb-4"></i>
-      <p className="text-gray-600 mb-4">{error}</p>
-      <button 
-        onClick={onRetry} 
-        className="bg-[#604CC3] text-white px-6 py-2 rounded-lg hover:bg-[#5441a8] transition-all duration-300"
-      >
-        <i className="fas fa-redo mr-2"></i>
+    <div style={styles.errorSection}>
+      <i className="fas fa-exclamation-triangle" style={styles.sectionErrorIcon}></i>
+      <p style={styles.sectionErrorText}>{error}</p>
+      <button onClick={onRetry} style={styles.sectionRetryButton}>
+        <i className="fas fa-redo" style={styles.buttonIcon}></i>
         Retry
       </button>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div style={styles.dashboard}>
       {/* FontAwesome CDN */}
       <link 
         rel="stylesheet" 
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
       />
       
-      <div className="max-w-7xl mx-auto p-6">
+      <div style={styles.container}>
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-[#604CC3] to-[#8b5cf6] rounded-3xl p-8 mb-8 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white bg-opacity-10 rounded-full -mr-32 -mt-32"></div>
-          <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center">
-            <div className="text-center lg:text-left mb-6 lg:mb-0">
-              <h1 className="text-4xl lg:text-5xl font-bold mb-3">
+        <div style={styles.welcomeSection}>
+          <div style={styles.welcomeDecorative}></div>
+          <div style={styles.welcomeContent}>
+            <div style={styles.welcomeText}>
+              <h1 style={styles.welcomeTitle}>
                 Welcome back, {user?.nama || 'Employee'}! 👋
               </h1>
-              <p className="text-xl text-white text-opacity-90">
+              <p style={styles.welcomeSubtitle}>
                 Ready to explore our products and manage your orders?
               </p>
             </div>
-            <div className="flex-shrink-0">
-              <Link 
-                to="/employee/shop" 
-                className="bg-white bg-opacity-20 backdrop-blur-sm text-white px-8 py-4 rounded-2xl font-semibold hover:bg-opacity-30 transition-all duration-300 inline-flex items-center"
-              >
-                <i className="fas fa-shopping-bag mr-3 text-lg"></i>
+            <div style={styles.welcomeActions}>
+              <Link to="/employee/shop" style={styles.welcomeButton}>
+                <i className="fas fa-shopping-bag" style={styles.buttonIcon}></i>
                 Start Shopping
               </Link>
             </div>
@@ -207,26 +202,24 @@ const EmployeeDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-            <i className="fas fa-bolt text-[#FF6600] mr-3"></i>
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>
+            <i className="fas fa-bolt" style={styles.sectionIcon}></i>
             Quick Actions
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div style={styles.quickActionsGrid}>
             <QuickActionCard
               title="Browse Products"
               description="Explore our product catalog"
               iconClass="fas fa-shopping-bag"
-              gradientFrom="from-[#FF6600]"
-              gradientTo="to-[#ff8533]"
+              backgroundColor="linear-gradient(135deg, #FF6600 0%, #ff8533 100%)"
               link="/employee/shop"
             />
             <QuickActionCard
               title="Shopping Cart"
               description="Review items in your cart"
               iconClass="fas fa-shopping-cart"
-              gradientFrom="from-[#8FD14F]"
-              gradientTo="to-[#7bc142]"
+              backgroundColor="linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)"
               link="/employee/cart"
               badge={dashboardData?.cartSummary?.total_items > 0 ? dashboardData.cartSummary.total_items : null}
             />
@@ -234,40 +227,33 @@ const EmployeeDashboard = () => {
               title="Order History"
               description="View your past transactions"
               iconClass="fas fa-history"
-              gradientFrom="from-[#604CC3]"
-              gradientTo="to-[#8b5cf6]"
+              backgroundColor="linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)"
               link="/employee/history"
             />
             <QuickActionCard
               title="Profile Settings"
               description="Update your account details"
               iconClass="fas fa-user-cog"
-              gradientFrom="from-gray-600"
-              gradientTo="to-gray-700"
+              backgroundColor="linear-gradient(135deg, #6b7280 0%, #4b5563 100%)"
               link="/employee/profile"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div style={styles.dashboardGrid}>
           {/* Cart Summary */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#8FD14F] to-[#7bc142] p-6 text-white">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold flex items-center">
-                  <i className="fas fa-shopping-cart mr-3"></i>
-                  Cart Summary
-                </h2>
-                <Link 
-                  to="/employee/cart" 
-                  className="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300 text-sm"
-                >
-                  <i className="fas fa-eye mr-2"></i>
-                  View Cart
-                </Link>
-              </div>
+          <div style={styles.card}>
+            <div style={{...styles.cardHeaderSection, background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)'}}>
+              <h2 style={styles.cardHeaderTitle}>
+                <i className="fas fa-shopping-cart" style={styles.headerIcon}></i>
+                Cart Summary
+              </h2>
+              <Link to="/employee/cart" style={styles.headerButton}>
+                <i className="fas fa-eye" style={styles.buttonIcon}></i>
+                View Cart
+              </Link>
             </div>
-            <div className="p-6">
+            <div style={styles.cardBody}>
               {errors.cartSummary ? (
                 <ErrorSection 
                   title="Cart Summary" 
@@ -275,29 +261,26 @@ const EmployeeDashboard = () => {
                   onRetry={handleRetry}
                 />
               ) : dashboardData?.cartSummary?.total_items > 0 ? (
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-gradient-to-br from-[#FF6600] to-[#ff8533] rounded-xl text-white">
-                    <div className="text-3xl font-bold mb-1">{dashboardData.cartSummary.total_items}</div>
-                    <div className="text-sm opacity-90">Items</div>
+                <div style={styles.statsGrid}>
+                  <div style={{...styles.statCard, background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)'}}>
+                    <div style={styles.statValue}>{dashboardData.cartSummary.total_items}</div>
+                    <div style={styles.statLabel}>Items</div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-[#8FD14F] to-[#7bc142] rounded-xl text-white">
-                    <div className="text-3xl font-bold mb-1">{dashboardData.cartSummary.total_quantity || dashboardData.cartSummary.total_items}</div>
-                    <div className="text-sm opacity-90">Quantity</div>
+                  <div style={{...styles.statCard, background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)'}}>
+                    <div style={styles.statValue}>{dashboardData.cartSummary.total_quantity || dashboardData.cartSummary.total_items}</div>
+                    <div style={styles.statLabel}>Quantity</div>
                   </div>
-                  <div className="text-center p-4 bg-gradient-to-br from-[#604CC3] to-[#8b5cf6] rounded-xl text-white">
-                    <div className="text-xl font-bold mb-1">Rp {(dashboardData.cartSummary.cart_value || dashboardData.cartSummary.total_amount || 0).toLocaleString()}</div>
-                    <div className="text-sm opacity-90">Total Value</div>
+                  <div style={{...styles.statCard, background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)'}}>
+                    <div style={styles.statValueSmall}>Rp {(dashboardData.cartSummary.cart_value || dashboardData.cartSummary.total_amount || 0).toLocaleString()}</div>
+                    <div style={styles.statLabel}>Total Value</div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <i className="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-                  <p className="text-gray-600 mb-6 text-lg">Your cart is empty</p>
-                  <Link 
-                    to="/employee/shop" 
-                    className="bg-gradient-to-r from-[#FF6600] to-[#ff8533] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                  >
-                    <i className="fas fa-shopping-bag mr-2"></i>
+                <div style={styles.emptyState}>
+                  <i className="fas fa-shopping-cart" style={styles.emptyIcon}></i>
+                  <p style={styles.emptyText}>Your cart is empty</p>
+                  <Link to="/employee/shop" style={styles.emptyButton}>
+                    <i className="fas fa-shopping-bag" style={styles.buttonIcon}></i>
                     Start Shopping
                   </Link>
                 </div>
@@ -306,23 +289,18 @@ const EmployeeDashboard = () => {
           </div>
 
           {/* Recent Transactions */}
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-            <div className="bg-gradient-to-r from-[#604CC3] to-[#8b5cf6] p-6 text-white">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold flex items-center">
-                  <i className="fas fa-clock mr-3"></i>
-                  Recent Orders
-                </h2>
-                <Link 
-                  to="/employee/history" 
-                  className="bg-white bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300 text-sm"
-                >
-                  <i className="fas fa-list mr-2"></i>
-                  View All
-                </Link>
-              </div>
+          <div style={styles.card}>
+            <div style={{...styles.cardHeaderSection, background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)'}}>
+              <h2 style={styles.cardHeaderTitle}>
+                <i className="fas fa-clock" style={styles.headerIcon}></i>
+                Recent Orders
+              </h2>
+              <Link to="/employee/history" style={styles.headerButton}>
+                <i className="fas fa-list" style={styles.buttonIcon}></i>
+                View All
+              </Link>
             </div>
-            <div>
+            <div style={styles.cardBody}>
               {errors.recentTransactions ? (
                 <ErrorSection 
                   title="Recent Orders" 
@@ -330,47 +308,48 @@ const EmployeeDashboard = () => {
                   onRetry={handleRetry}
                 />
               ) : dashboardData?.recentTransactions?.length > 0 ? (
-                <div className="divide-y divide-gray-100">
+                <div style={styles.transactionsList}>
                   {dashboardData.recentTransactions.slice(0, 5).map((transaction) => (
-                    <div key={transaction.id_transaksi} className="p-6 hover:bg-gray-50 transition-all duration-300">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="font-bold text-gray-800 flex items-center">
-                            <i className="fas fa-receipt text-[#FF6600] mr-2"></i>
-                            Order #{transaction.id_transaksi}
-                          </div>
-                          <div className="text-gray-600 text-sm mt-1">
-                            <i className="fas fa-calendar mr-1"></i>
-                            {new Date(transaction.tanggal_transaksi).toLocaleDateString()}
-                          </div>
+                    <div key={transaction.id_transaksi} style={styles.transactionItem}>
+                      <div style={styles.transactionInfo}>
+                        <div style={styles.transactionId}>
+                          <i className="fas fa-receipt" style={styles.transactionIcon}></i>
+                          Order #{transaction.id_transaksi}
                         </div>
-                        <div className="text-right">
-                          <div className="font-bold text-gray-800 text-lg">
-                            Rp {transaction.total_harga?.toLocaleString() || '0'}
-                          </div>
-                          <div className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mt-1 ${
-                            transaction.status_pembayaran === 'completed' 
-                              ? 'bg-[#8FD14F] bg-opacity-20 text-[#8FD14F]' 
-                              : transaction.status_pembayaran === 'pending'
-                              ? 'bg-[#FF6600] bg-opacity-20 text-[#FF6600]'
-                              : 'bg-red-100 text-red-600'
-                          }`}>
-                            {transaction.status_pembayaran || 'pending'}
-                          </div>
+                        <div style={styles.transactionDate}>
+                          <i className="fas fa-calendar" style={styles.transactionDateIcon}></i>
+                          {new Date(transaction.tanggal_transaksi).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div style={styles.transactionDetails}>
+                        <div style={styles.transactionAmount}>
+                          Rp {transaction.total_harga?.toLocaleString() || '0'}
+                        </div>
+                        <div style={{
+                          ...styles.transactionStatus,
+                          backgroundColor: transaction.status_pembayaran === 'completed' 
+                            ? 'rgba(143, 209, 79, 0.2)' 
+                            : transaction.status_pembayaran === 'pending'
+                            ? 'rgba(255, 102, 0, 0.2)'
+                            : 'rgba(239, 68, 68, 0.2)',
+                          color: transaction.status_pembayaran === 'completed' 
+                            ? '#8FD14F' 
+                            : transaction.status_pembayaran === 'pending'
+                            ? '#FF6600'
+                            : '#ef4444'
+                        }}>
+                          {transaction.status_pembayaran || 'pending'}
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <i className="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
-                  <p className="text-gray-600 mb-6 text-lg">No recent orders</p>
-                  <Link 
-                    to="/employee/shop" 
-                    className="bg-gradient-to-r from-[#604CC3] to-[#8b5cf6] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                  >
-                    <i className="fas fa-shopping-bag mr-2"></i>
+                <div style={styles.emptyState}>
+                  <i className="fas fa-inbox" style={styles.emptyIcon}></i>
+                  <p style={styles.emptyText}>No recent orders</p>
+                  <Link to="/employee/shop" style={{...styles.emptyButton, background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)'}}>
+                    <i className="fas fa-shopping-bag" style={styles.buttonIcon}></i>
                     Place Your First Order
                   </Link>
                 </div>
@@ -380,43 +359,39 @@ const EmployeeDashboard = () => {
         </div>
 
         {/* Featured Products */}
-        <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800 flex items-center">
-              <i className="fas fa-star text-[#FF6600] mr-3"></i>
+        <div style={styles.section}>
+          <div style={styles.sectionHeader}>
+            <h2 style={styles.sectionTitle}>
+              <i className="fas fa-star" style={styles.sectionIcon}></i>
               Featured Products
             </h2>
-            <Link 
-              to="/employee/shop" 
-              className="bg-gradient-to-r from-[#FF6600] to-[#ff8533] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-            >
-              <i className="fas fa-eye mr-2"></i>
+            <Link to="/employee/shop" style={styles.sectionButton}>
+              <i className="fas fa-eye" style={styles.buttonIcon}></i>
               View All Products
             </Link>
           </div>
           {errors.featuredProducts ? (
-            <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-              <ErrorSection 
-                title="Featured Products" 
-                error={errors.featuredProducts}
-                onRetry={handleRetry}
-              />
+            <div style={styles.card}>
+              <div style={styles.cardBody}>
+                <ErrorSection 
+                  title="Featured Products" 
+                  error={errors.featuredProducts}
+                  onRetry={handleRetry}
+                />
+              </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+            <div style={styles.productsGrid}>
               {dashboardData?.featuredProducts?.length > 0 ? (
                 dashboardData.featuredProducts.map((product) => (
                   <ProductCard key={product.id_product} product={product} />
                 ))
               ) : (
-                <div className="col-span-full bg-white rounded-2xl shadow-xl border border-gray-100 text-center py-16">
-                  <i className="fas fa-box-open text-6xl text-gray-300 mb-4"></i>
-                  <p className="text-gray-600 mb-6 text-lg">No products available</p>
-                  <Link 
-                    to="/employee/shop" 
-                    className="bg-gradient-to-r from-[#8FD14F] to-[#7bc142] text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-300"
-                  >
-                    <i className="fas fa-shopping-bag mr-2"></i>
+                <div style={styles.noProductsCard}>
+                  <i className="fas fa-box-open" style={styles.emptyIcon}></i>
+                  <p style={styles.emptyText}>No products available</p>
+                  <Link to="/employee/shop" style={{...styles.emptyButton, background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)'}}>
+                    <i className="fas fa-shopping-bag" style={styles.buttonIcon}></i>
                     Browse All Products
                   </Link>
                 </div>
@@ -427,6 +402,478 @@ const EmployeeDashboard = () => {
       </div>
     </div>
   );
+};
+
+// Styles object
+const styles = {
+  dashboard: {
+    minHeight: '100vh',
+    backgroundColor: '#F5F5F5',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  },
+  container: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '24px'
+  },
+  errorContainer: {
+    minHeight: '100vh',
+    backgroundColor: '#F5F5F5',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '32px'
+  },
+  errorCard: {
+    backgroundColor: 'white',
+    borderRadius: '24px',
+    padding: '48px 32px',
+    textAlign: 'center',
+    boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
+    maxWidth: '400px',
+    width: '100%',
+    border: '1px solid #e5e7eb'
+  },
+  errorContent: {
+    marginBottom: '32px'
+  },
+  errorIcon: {
+    fontSize: '4rem',
+    color: '#FF6600',
+    marginBottom: '16px'
+  },
+  errorTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '8px',
+    margin: 0
+  },
+  errorText: {
+    color: '#666',
+    lineHeight: '1.6',
+    margin: 0
+  },
+  retryButton: {
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    color: 'white',
+    border: 'none',
+    padding: '12px 32px',
+    borderRadius: '12px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    transition: 'all 0.3s ease',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  welcomeSection: {
+    background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)',
+    borderRadius: '24px',
+    padding: '48px 32px',
+    marginBottom: '32px',
+    color: 'white',
+    position: 'relative',
+    overflow: 'hidden'
+  },
+  welcomeDecorative: {
+    position: 'absolute',
+    top: '0',
+    right: '0',
+    width: '256px',
+    height: '256px',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: '50%',
+    marginRight: '-128px',
+    marginTop: '-128px'
+  },
+  welcomeContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 10,
+    flexWrap: 'wrap',
+    gap: '24px'
+  },
+  welcomeText: {
+    flex: 1,
+    minWidth: '300px'
+  },
+  welcomeTitle: {
+    fontSize: '3rem',
+    fontWeight: 'bold',
+    marginBottom: '12px',
+    margin: 0
+  },
+  welcomeSubtitle: {
+    fontSize: '1.25rem',
+    opacity: 0.9,
+    margin: 0
+  },
+  welcomeActions: {
+    flexShrink: 0
+  },
+  welcomeButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backdropFilter: 'blur(10px)',
+    color: 'white',
+    padding: '16px 32px',
+    borderRadius: '16px',
+    textDecoration: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '12px',
+    fontWeight: '600',
+    transition: 'all 0.3s ease',
+    border: '2px solid rgba(255, 255, 255, 0.3)'
+  },
+  section: {
+    marginBottom: '32px'
+  },
+  sectionTitle: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '24px',
+    margin: 0,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  sectionIcon: {
+    color: '#FF6600'
+  },
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '24px',
+    flexWrap: 'wrap',
+    gap: '16px'
+  },
+  sectionButton: {
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    color: 'white',
+    padding: '12px 24px',
+    borderRadius: '12px',
+    textDecoration: 'none',
+    fontWeight: '600',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  quickActionsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '24px'
+  },
+  quickActionLink: {
+    textDecoration: 'none',
+    color: 'inherit'
+  },
+  quickActionCard: {
+    borderRadius: '16px',
+    padding: '24px',
+    color: 'white',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.15)',
+    transition: 'all 0.3s ease',
+    position: 'relative',
+    overflow: 'hidden',
+    cursor: 'pointer'
+  },
+  cardDecorative: {
+    position: 'absolute',
+    top: '0',
+    right: '0',
+    width: '128px',
+    height: '128px',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: '50%',
+    marginRight: '-64px',
+    marginTop: '-64px'
+  },
+  cardContent: {
+    position: 'relative',
+    zIndex: 10
+  },
+  cardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '16px'
+  },
+  cardIconContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '12px',
+    padding: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  cardIcon: {
+    fontSize: '1.5rem'
+  },
+  badge: {
+    backgroundColor: 'white',
+    color: '#FF6600',
+    borderRadius: '50%',
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.875rem',
+    fontWeight: 'bold'
+  },
+  cardTitle: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    marginBottom: '8px',
+    margin: 0
+  },
+  cardDescription: {
+    opacity: 0.9,
+    fontSize: '0.875rem',
+    margin: 0
+  },
+  dashboardGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+    gap: '32px',
+    marginBottom: '32px'
+  },
+  card: {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb',
+    overflow: 'hidden'
+  },
+  cardHeaderSection: {
+    padding: '24px',
+    color: 'white'
+  },
+  cardHeaderTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    margin: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  headerIcon: {
+    marginRight: '12px'
+  },
+  headerButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    color: 'white',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontSize: '0.875rem',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  cardBody: {
+    padding: '24px'
+  },
+  statsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '16px'
+  },
+  statCard: {
+    borderRadius: '12px',
+    padding: '20px',
+    textAlign: 'center',
+    color: 'white'
+  },
+  statValue: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  statValueSmall: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  statLabel: {
+    fontSize: '0.875rem',
+    opacity: 0.9,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  emptyState: {
+    textAlign: 'center',
+    padding: '48px 24px'
+  },
+  emptyIcon: {
+    fontSize: '4rem',
+    color: '#d1d5db',
+    marginBottom: '16px'
+  },
+  emptyText: {
+    color: '#666',
+    marginBottom: '24px',
+    fontSize: '1.125rem',
+    margin: '0 0 24px 0'
+  },
+  emptyButton: {
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    color: 'white',
+    padding: '12px 24px',
+    borderRadius: '12px',
+    textDecoration: 'none',
+    fontWeight: '600',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  transactionsList: {
+    padding: 0
+  },
+  transactionItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 0',
+    borderBottom: '1px solid #f0f0f0',
+    transition: 'all 0.2s ease'
+  },
+  transactionInfo: {
+    flex: 1
+  },
+  transactionId: {
+    fontWeight: 'bold',
+    color: '#333',
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: '4px'
+  },
+  transactionIcon: {
+    color: '#FF6600',
+    marginRight: '8px'
+  },
+  transactionDate: {
+    fontSize: '0.875rem',
+    color: '#666',
+    display: 'flex',
+    alignItems: 'center'
+  },
+  transactionDateIcon: {
+    marginRight: '4px'
+  },
+  transactionDetails: {
+    textAlign: 'right'
+  },
+  transactionAmount: {
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: '1.125rem',
+    marginBottom: '4px'
+  },
+  transactionStatus: {
+    padding: '4px 12px',
+    borderRadius: '12px',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    display: 'inline-block'
+  },
+  productsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '24px'
+  },
+  productCard: {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    padding: '24px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer'
+  },
+  productImageContainer: {
+    background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)',
+    borderRadius: '12px',
+    padding: '16px',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  productIcon: {
+    fontSize: '1.5rem',
+    color: 'white'
+  },
+  productName: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '8px',
+    margin: '0 0 8px 0'
+  },
+  productPrice: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#FF6600',
+    marginBottom: '4px',
+    margin: '0 0 4px 0'
+  },
+  productStock: {
+    fontSize: '0.875rem',
+    color: '#666',
+    margin: 0
+  },
+  noProductsCard: {
+    gridColumn: '1 / -1',
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb',
+    textAlign: 'center',
+    padding: '64px 32px'
+  },
+  errorSection: {
+    textAlign: 'center',
+    padding: '48px 24px'
+  },
+  sectionErrorIcon: {
+    fontSize: '3rem',
+    color: '#FF6600',
+    marginBottom: '16px'
+  },
+  sectionErrorText: {
+    color: '#666',
+    marginBottom: '16px',
+    fontSize: '0.875rem'
+  },
+  sectionRetryButton: {
+    background: '#604CC3',
+    color: 'white',
+    border: 'none',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    fontSize: '0.875rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  buttonIcon: {
+    marginRight: '8px'
+  }
 };
 
 export default EmployeeDashboard;

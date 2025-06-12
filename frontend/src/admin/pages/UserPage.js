@@ -1,10 +1,7 @@
-// src/admin/pages/UserPage.js
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../shared/contexts/AuthContext';
-import userService from '../../shared/services/userService';
 
 const UserPage = () => {
-    const { user: currentUser } = useAuth();
+    const currentUser = { id_user: 1, nama: 'Admin User' }; // Mock current user
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -115,9 +112,7 @@ const UserPage = () => {
     };
 
     // Add User
-    const handleAddUser = async (e) => {
-        e.preventDefault();
-
+    const handleAddUser = async () => {
         if (!formData.nama || !formData.email || !formData.password) {
             setError('All fields are required');
             return;
@@ -127,16 +122,15 @@ const UserPage = () => {
             setLoading(true);
             clearMessages();
 
-            const response = await userService.create(formData);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Mock success response
+            setSuccess('User added successfully!');
+            resetForm();
+            setShowAddModal(false);
+            await loadUsers();
 
-            if (response.success) {
-                setSuccess('User added successfully!');
-                resetForm();
-                setShowAddModal(false);
-                await loadUsers();
-            } else {
-                setError(response.message || 'Failed to add user');
-            }
         } catch (err) {
             setError('Error adding user: ' + err.message);
             console.error('Add user error:', err);
@@ -146,9 +140,7 @@ const UserPage = () => {
     };
 
     // Edit User
-    const handleEditUser = async (e) => {
-        e.preventDefault();
-
+    const handleEditUser = async () => {
         if (!formData.nama || !formData.email) {
             setError('Name and email are required');
             return;
@@ -158,23 +150,15 @@ const UserPage = () => {
             setLoading(true);
             clearMessages();
 
-            // Remove password if empty (don't update password)
-            const updateData = { ...formData };
-            if (!updateData.password) {
-                delete updateData.password;
-            }
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-            const response = await userService.update(selectedUser.id_user, updateData);
+            setSuccess('User updated successfully!');
+            resetForm();
+            setShowEditModal(false);
+            setSelectedUser(null);
+            await loadUsers();
 
-            if (response.success) {
-                setSuccess('User updated successfully!');
-                resetForm();
-                setShowEditModal(false);
-                setSelectedUser(null);
-                await loadUsers();
-            } else {
-                setError(response.message || 'Failed to update user');
-            }
         } catch (err) {
             setError('Error updating user: ' + err.message);
             console.error('Update user error:', err);
@@ -191,16 +175,14 @@ const UserPage = () => {
             setLoading(true);
             clearMessages();
 
-            const response = await userService.delete(selectedUser.id_user);
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 1000));
 
-            if (response.success) {
-                setSuccess('User deleted successfully!');
-                setShowDeleteModal(false);
-                setSelectedUser(null);
-                await loadUsers();
-            } else {
-                setError(response.message || 'Failed to delete user');
-            }
+            setSuccess('User deleted successfully!');
+            setShowDeleteModal(false);
+            setSelectedUser(null);
+            await loadUsers();
+
         } catch (err) {
             setError('Error deleting user: ' + err.message);
             console.error('Delete user error:', err);
@@ -245,852 +227,491 @@ const UserPage = () => {
 
     if (loading && users.length === 0) {
         return (
-            <div className="page-container">
-                <div className="loading-spinner">
-                    <div className="spinner"></div>
-                    <p>Loading users...</p>
+            <>
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+                <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+                        <p className="text-gray-600 text-lg">Loading users...</p>
+                    </div>
                 </div>
-            </div>
+            </>
         );
     }
 
     return (
-        <div className="page-container">
-            {/* Header */}
-            <div className="page-header">
-                <div className="header-content">
-                    <h1>👥 User Management</h1>
-                    <p>Manage system users and their roles</p>
-                </div>
-                <button
-                    className="btn btn-primary"
-                    onClick={() => {
-                        setShowAddModal(true);
-                        resetForm();
-                        clearMessages();
-                    }}
-                >
-                    ➕ Add New User
-                </button>
-            </div>
+        <>
+            {/* CDN Links */}
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+            
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+                <div className="max-w-7xl mx-auto">
+                    {/* Header */}
+                    <div className="bg-gradient-to-r from-purple-600 to-purple-700 rounded-3xl p-8 mb-8 text-white shadow-2xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-32 translate-x-32"></div>
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full translate-y-24 -translate-x-24"></div>
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                            <div>
+                                <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+                                    <i className="fas fa-users text-orange-400"></i>
+                                    User Management
+                                </h1>
+                                <p className="text-purple-100 text-lg">Manage system users and their roles</p>
+                            </div>
+                            <button
+                                className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 rounded-xl transition-all duration-200 flex items-center gap-2 shadow-lg"
+                                onClick={() => {
+                                    setShowAddModal(true);
+                                    resetForm();
+                                    clearMessages();
+                                }}
+                            >
+                                <i className="fas fa-plus"></i>
+                                Add New User
+                            </button>
+                        </div>
+                    </div>
 
-            {/* Messages */}
-            {error && (
-                <div className="alert alert-error">
-                    <span>❌ {error}</span>
-                    <button onClick={clearMessages} className="alert-close">✕</button>
-                </div>
-            )}
+                    {/* Messages */}
+                    {error && (
+                        <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-4 mb-6 flex justify-between items-center">
+                            <span className="text-red-700 flex items-center gap-2">
+                                <i className="fas fa-exclamation-circle"></i>
+                                {error}
+                            </span>
+                            <button onClick={clearMessages} className="text-red-500 hover:text-red-700 text-xl">
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                    )}
 
-            {success && (
-                <div className="alert alert-success">
-                    <span>✅ {success}</span>
-                    <button onClick={clearMessages} className="alert-close">✕</button>
-                </div>
-            )}
+                    {success && (
+                        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-4 mb-6 flex justify-between items-center">
+                            <span className="text-green-700 flex items-center gap-2">
+                                <i className="fas fa-check-circle"></i>
+                                {success}
+                            </span>
+                            <button onClick={clearMessages} className="text-green-500 hover:text-green-700 text-xl">
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                    )}
 
-            {/* Filters */}
-            <div className="filters-section">
-                <div className="search-box">
-                    <span className="search-icon">🔍</span>
-                    <input
-                        type="text"
-                        placeholder="Search by name or email..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="search-input"
-                    />
-                </div>
+                    {/* Filters */}
+                    <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg">
+                        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+                            <div className="flex-1 relative">
+                                <div className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                                    <i className="fas fa-search"></i>
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name or email..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                />
+                            </div>
 
-                <div className="filter-group">
-                    <label>Filter by Role:</label>
-                    <select
-                        value={filterRole}
-                        onChange={(e) => setFilterRole(e.target.value)}
-                        className="filter-select"
-                    >
-                        <option value="all">All Roles</option>
-                        <option value="admin">Admin</option>
-                        <option value="employee">Employee</option>
-                    </select>
-                </div>
-            </div>
+                            <div className="flex items-center gap-3">
+                                <label className="text-gray-700 font-semibold whitespace-nowrap">Filter by Role:</label>
+                                <select
+                                    value={filterRole}
+                                    onChange={(e) => setFilterRole(e.target.value)}
+                                    className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white min-w-[150px]"
+                                >
+                                    <option value="all">All Roles</option>
+                                    <option value="admin">Admin</option>
+                                    <option value="employee">Employee</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-            {/* Users Table */}
-            <div className="table-container">
-                <table className="data-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Created Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentUsers.length === 0 ? (
-                            <tr>
-                                <td colSpan="6" className="no-data">
-                                    {searchTerm || filterRole !== 'all'
-                                        ? '🔍 No users found matching your criteria'
-                                        : '📝 No users available'}
-                                </td>
-                            </tr>
-                        ) : (
-                            currentUsers.map((user) => (
-                                <tr key={user.id_user}>
-                                    <td>#{user.id_user}</td>
-                                    <td>
-                                        <div className="user-info">
-                                            <span className="user-name">{user.nama}</span>
-                                            {user.id_user === currentUser?.id_user && (
-                                                <span className="current-user-badge">You</span>
+                    {/* Users Table */}
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
+                        <div className="overflow-x-auto">
+                            <table className="w-full">
+                                <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
+                                    <tr>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">ID</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Name</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Email</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Role</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Created Date</th>
+                                        <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {currentUsers.length === 0 ? (
+                                        <tr>
+                                            <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                                                <div className="flex flex-col items-center gap-3">
+                                                    <i className="fas fa-search text-4xl text-gray-300"></i>
+                                                    <p className="text-lg">
+                                                        {searchTerm || filterRole !== 'all'
+                                                            ? 'No users found matching your criteria'
+                                                            : 'No users available'}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ) : (
+                                        currentUsers.map((user) => (
+                                            <tr key={user.id_user} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-orange-50 transition-all duration-200">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    #{user.id_user}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-sm font-semibold text-gray-900">{user.nama}</span>
+                                                        {user.id_user === currentUser?.id_user && (
+                                                            <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                                                                You
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{user.email}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${
+                                                        user.role === 'admin' 
+                                                            ? 'bg-red-100 text-red-700 border border-red-200' 
+                                                            : 'bg-blue-100 text-blue-700 border border-blue-200'
+                                                    }`}>
+                                                        <i className={user.role === 'admin' ? 'fas fa-user-shield' : 'fas fa-user'}></i>
+                                                        {user.role}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    {user.created_at
+                                                        ? new Date(user.created_at).toLocaleDateString('id-ID')
+                                                        : 'N/A'
+                                                    }
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-2 rounded-lg text-xs transition-colors duration-200 flex items-center gap-1 disabled:opacity-50"
+                                                            onClick={() => openEditModal(user)}
+                                                            disabled={loading}
+                                                        >
+                                                            <i className="fas fa-edit"></i>
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-lg text-xs transition-colors duration-200 flex items-center gap-1 disabled:opacity-50"
+                                                            onClick={() => openDeleteModal(user)}
+                                                            disabled={loading || user.id_user === currentUser?.id_user}
+                                                            title={user.id_user === currentUser?.id_user ? "Cannot delete yourself" : "Delete user"}
+                                                        >
+                                                            <i className="fas fa-trash"></i>
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <div className="flex justify-center items-center gap-4 mb-8">
+                            <button
+                                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                            >
+                                <i className="fas fa-chevron-left"></i>
+                                Previous
+                            </button>
+
+                            <span className="text-gray-600 font-semibold">
+                                Page {currentPage} of {totalPages} ({filteredUsers.length} users)
+                            </span>
+
+                            <button
+                                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                            >
+                                Next
+                                <i className="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    )}
+
+                    {/* Add User Modal */}
+                    {showAddModal && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                        <i className="fas fa-plus text-orange-500"></i>
+                                        Add New User
+                                    </h3>
+                                    <button
+                                        className="text-gray-500 hover:text-gray-700 text-2xl"
+                                        onClick={() => setShowAddModal(false)}
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="p-6 space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name:</label>
+                                        <input
+                                            type="text"
+                                            name="nama"
+                                            value={formData.nama}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter full name"
+                                            required
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email:</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter email address"
+                                            required
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Password:</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter password"
+                                            required
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Role:</label>
+                                        <select
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white transition-colors duration-200"
+                                            required
+                                        >
+                                            <option value="employee">
+                                                <i className="fas fa-user"></i> Employee
+                                            </option>
+                                            <option value="admin">
+                                                <i className="fas fa-user-shield"></i> Admin
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold"
+                                            onClick={() => setShowAddModal(false)}
+                                            disabled={loading}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50"
+                                            disabled={loading}
+                                            onClick={handleAddUser}
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    <i className="fas fa-spinner animate-spin"></i>
+                                                    Adding...
+                                                </span>
+                                            ) : (
+                                                'Add User'
                                             )}
-                                        </div>
-                                    </td>
-                                    <td>{user.email}</td>
-                                    <td>
-                                        <span className={`role-badge role-${user.role}`}>
-                                            {user.role === 'admin' ? '👨‍💼' : '👥'} {user.role}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {user.created_at
-                                            ? new Date(user.created_at).toLocaleDateString('id-ID')
-                                            : 'N/A'
-                                        }
-                                    </td>
-                                    <td>
-                                        <div className="action-buttons">
-                                            <button
-                                                className="btn btn-sm btn-secondary"
-                                                onClick={() => openEditModal(user)}
-                                                disabled={loading}
-                                            >
-                                                ✏️ Edit
-                                            </button>
-                                            <button
-                                                className="btn btn-sm btn-danger"
-                                                onClick={() => openDeleteModal(user)}
-                                                disabled={loading || user.id_user === currentUser?.id_user}
-                                                title={user.id_user === currentUser?.id_user ? "Cannot delete yourself" : "Delete user"}
-                                            >
-                                                🗑️ Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Edit User Modal */}
+                    {showEditModal && selectedUser && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+                                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                        <i className="fas fa-edit text-purple-500"></i>
+                                        Edit User
+                                    </h3>
+                                    <button
+                                        className="text-gray-500 hover:text-gray-700 text-2xl"
+                                        onClick={() => setShowEditModal(false)}
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="p-6 space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Full Name:</label>
+                                        <input
+                                            type="text"
+                                            name="nama"
+                                            value={formData.nama}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter full name"
+                                            required
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email:</label>
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter email address"
+                                            required
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">New Password (leave empty to keep current):</label>
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter new password (optional)"
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors duration-200"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Role:</label>
+                                        <select
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none bg-white transition-colors duration-200"
+                                            required
+                                        >
+                                            <option value="employee">Employee</option>
+                                            <option value="admin">Admin</option>
+                                        </select>
+                                    </div>
+
+                                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold"
+                                            onClick={() => setShowEditModal(false)}
+                                            disabled={loading}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50"
+                                            disabled={loading}
+                                            onClick={handleEditUser}
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    <i className="fas fa-spinner animate-spin"></i>
+                                                    Updating...
+                                                </span>
+                                            ) : (
+                                                'Update User'
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Delete Confirmation Modal */}
+                    {showDeleteModal && selectedUser && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
+                                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                                    <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                                        <i className="fas fa-trash text-red-500"></i>
+                                        Delete User
+                                    </h3>
+                                    <button
+                                        className="text-gray-500 hover:text-gray-700 text-2xl"
+                                        onClick={() => setShowDeleteModal(false)}
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+
+                                <div className="p-6">
+                                    <p className="text-gray-700 mb-4">Are you sure you want to delete this user?</p>
+                                    <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                                        <div className="font-semibold text-gray-800">{selectedUser.nama}</div>
+                                        <div className="text-gray-600 text-sm">{selectedUser.email}</div>
+                                    </div>
+                                    <p className="text-red-600 text-sm text-center mb-6 flex items-center justify-center gap-2">
+                                        <i className="fas fa-exclamation-triangle"></i>
+                                        This action cannot be undone!
+                                    </p>
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-gray-500 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold"
+                                            onClick={() => setShowDeleteModal(false)}
+                                            disabled={loading}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl transition-colors duration-200 font-semibold disabled:opacity-50"
+                                            onClick={handleDeleteUser}
+                                            disabled={loading}
+                                        >
+                                            {loading ? (
+                                                <span className="flex items-center justify-center gap-2">
+                                                    <i className="fas fa-spinner animate-spin"></i>
+                                                    Deleting...
+                                                </span>
+                                            ) : (
+                                                'Delete User'
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="pagination">
-                    <button
-                        className="btn btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                        disabled={currentPage === 1}
-                    >
-                        ← Previous
-                    </button>
-
-                    <span className="pagination-info">
-                        Page {currentPage} of {totalPages} ({filteredUsers.length} users)
-                    </span>
-
-                    <button
-                        className="btn btn-sm"
-                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                    >
-                        Next →
-                    </button>
-                </div>
-            )}
-
-            {/* Add User Modal */}
-            {showAddModal && (
-                <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>➕ Add New User</h3>
-                            <button
-                                className="modal-close"
-                                onClick={() => setShowAddModal(false)}
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleAddUser} className="modal-form">
-                            <div className="form-group">
-                                <label>Full Name:</label>
-                                <input
-                                    type="text"
-                                    name="nama"
-                                    value={formData.nama}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter full name"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter email address"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Password:</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter password"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Role:</label>
-                                <select
-                                    name="role"
-                                    value={formData.role}
-                                    onChange={handleInputChange}
-                                    className="form-control"
-                                    required
-                                >
-                                    <option value="employee">👥 Employee</option>
-                                    <option value="admin">👨‍💼 Admin</option>
-                                </select>
-                            </div>
-
-                            <div className="modal-actions">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowAddModal(false)}
-                                    disabled={loading}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Adding...' : 'Add User'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Edit User Modal */}
-            {showEditModal && selectedUser && (
-                <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>✏️ Edit User</h3>
-                            <button
-                                className="modal-close"
-                                onClick={() => setShowEditModal(false)}
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <form onSubmit={handleEditUser} className="modal-form">
-                            <div className="form-group">
-                                <label>Full Name:</label>
-                                <input
-                                    type="text"
-                                    name="nama"
-                                    value={formData.nama}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter full name"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Email:</label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter email address"
-                                    required
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>New Password (leave empty to keep current):</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter new password (optional)"
-                                    className="form-control"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label>Role:</label>
-                                <select
-                                    name="role"
-                                    value={formData.role}
-                                    onChange={handleInputChange}
-                                    className="form-control"
-                                    required
-                                >
-                                    <option value="employee">👥 Employee</option>
-                                    <option value="admin">👨‍💼 Admin</option>
-                                </select>
-                            </div>
-
-                            <div className="modal-actions">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowEditModal(false)}
-                                    disabled={loading}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary"
-                                    disabled={loading}
-                                >
-                                    {loading ? 'Updating...' : 'Update User'}
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
-
-            {/* Delete Confirmation Modal */}
-            {showDeleteModal && selectedUser && (
-                <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
-                    <div className="modal-content modal-sm" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>🗑️ Delete User</h3>
-                            <button
-                                className="modal-close"
-                                onClick={() => setShowDeleteModal(false)}
-                            >
-                                ✕
-                            </button>
-                        </div>
-
-                        <div className="modal-body">
-                            <p>Are you sure you want to delete this user?</p>
-                            <div className="user-preview">
-                                <strong>{selectedUser.nama}</strong><br />
-                                <span className="text-muted">{selectedUser.email}</span>
-                            </div>
-                            <p className="warning-text">⚠️ This action cannot be undone!</p>
-                        </div>
-
-                        <div className="modal-actions">
-                            <button
-                                type="button"
-                                className="btn btn-secondary"
-                                onClick={() => setShowDeleteModal(false)}
-                                disabled={loading}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={handleDeleteUser}
-                                disabled={loading}
-                            >
-                                {loading ? 'Deleting...' : 'Delete User'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            <style jsx>{`
-        .page-container {
-          padding: 24px;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-
-        .page-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          margin-bottom: 32px;
-          padding-bottom: 16px;
-          border-bottom: 2px solid #e9ecef;
-        }
-
-        .header-content h1 {
-          margin: 0 0 8px 0;
-          color: #333;
-          font-size: 2rem;
-          font-weight: 700;
-        }
-
-        .header-content p {
-          margin: 0;
-          color: #666;
-          font-size: 1rem;
-        }
-
-        .loading-spinner {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 300px;
-          text-align: center;
-        }
-
-        .spinner {
-          width: 32px;
-          height: 32px;
-          border: 3px solid #f3f3f3;
-          border-top: 3px solid #007bff;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin-bottom: 16px;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        .alert {
-          padding: 12px 16px;
-          border-radius: 8px;
-          margin-bottom: 20px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .alert-error {
-          background: #f8d7da;
-          color: #721c24;
-          border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-          background: #d4edda;
-          color: #155724;
-          border: 1px solid #c3e6cb;
-        }
-
-        .alert-close {
-          background: none;
-          border: none;
-          color: inherit;
-          cursor: pointer;
-          font-size: 16px;
-          padding: 0;
-          margin-left: 12px;
-        }
-
-        .filters-section {
-          display: flex;
-          gap: 20px;
-          margin-bottom: 24px;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .search-box {
-          position: relative;
-          flex: 1;
-          min-width: 250px;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: #666;
-          font-size: 16px;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 10px 12px 10px 40px;
-          border: 2px solid #e9ecef;
-          border-radius: 8px;
-          font-size: 14px;
-          transition: border-color 0.3s ease;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-
-        .filter-group {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .filter-group label {
-          font-weight: 500;
-          color: #333;
-          white-space: nowrap;
-        }
-
-        .filter-select {
-          padding: 8px 12px;
-          border: 2px solid #e9ecef;
-          border-radius: 6px;
-          font-size: 14px;
-          background: white;
-        }
-
-        .table-container {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          overflow: hidden;
-          margin-bottom: 20px;
-        }
-
-        .data-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-
-        .data-table th {
-          background: #f8f9fa;
-          padding: 16px 12px;
-          text-align: left;
-          font-weight: 600;
-          color: #333;
-          border-bottom: 2px solid #dee2e6;
-        }
-
-        .data-table td {
-          padding: 12px;
-          border-bottom: 1px solid #dee2e6;
-          vertical-align: middle;
-        }
-
-        .data-table tr:hover {
-          background: #f8f9fa;
-        }
-
-        .no-data {
-          text-align: center;
-          color: #666;
-          font-style: italic;
-          padding: 40px;
-        }
-
-        .user-info {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .user-name {
-          font-weight: 500;
-        }
-
-        .current-user-badge {
-          background: #007bff;
-          color: white;
-          font-size: 10px;
-          padding: 2px 6px;
-          border-radius: 4px;
-          font-weight: 500;
-        }
-
-        .role-badge {
-          display: inline-flex;
-          align-items: center;
-          padding: 4px 8px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 500;
-          text-transform: capitalize;
-        }
-
-        .role-admin {
-          background: #dc3545;
-          color: white;
-        }
-
-        .role-employee {
-          background: #007bff;
-          color: white;
-        }
-
-        .action-buttons {
-          display: flex;
-          gap: 8px;
-        }
-
-        .btn {
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: 500;
-          transition: all 0.3s ease;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          white-space: nowrap;
-        }
-
-        .btn:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none !important;
-        }
-
-        .btn-primary {
-          background: #007bff;
-          color: white;
-          padding: 10px 20px;
-          font-size: 14px;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-          background: #0056b3;
-          transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-          background: #6c757d;
-          color: white;
-          padding: 8px 12px;
-          font-size: 13px;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-          background: #545b62;
-        }
-
-        .btn-danger {
-          background: #dc3545;
-          color: white;
-          padding: 8px 12px;
-          font-size: 13px;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-          background: #c82333;
-        }
-
-        .btn-sm {
-          padding: 6px 12px;
-          font-size: 13px;
-        }
-
-        .pagination {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 16px;
-          margin-top: 20px;
-        }
-
-        .pagination-info {
-          color: #666;
-          font-size: 14px;
-        }
-
-        .modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.5);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 1000;
-          padding: 20px;
-        }
-
-        .modal-content {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-          width: 100%;
-          max-width: 500px;
-          max-height: 90vh;
-          overflow-y: auto;
-        }
-
-        .modal-sm {
-          max-width: 400px;
-        }
-
-        .modal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 24px;
-          border-bottom: 1px solid #dee2e6;
-        }
-
-        .modal-header h3 {
-          margin: 0;
-          color: #333;
-          font-size: 1.25rem;
-        }
-
-        .modal-close {
-          background: none;
-          border: none;
-          font-size: 20px;
-          cursor: pointer;
-          color: #666;
-          padding: 4px;
-        }
-
-        .modal-close:hover {
-          color: #333;
-        }
-
-        .modal-form {
-          padding: 24px;
-        }
-
-        .modal-body {
-          padding: 24px;
-        }
-
-        .form-group {
-          margin-bottom: 20px;
-        }
-
-        .form-group label {
-          display: block;
-          margin-bottom: 6px;
-          font-weight: 500;
-          color: #333;
-        }
-
-        .form-control {
-          width: 100%;
-          padding: 10px 12px;
-          border: 2px solid #e9ecef;
-          border-radius: 6px;
-          font-size: 14px;
-          transition: border-color 0.3s ease;
-          box-sizing: border-box;
-        }
-
-        .form-control:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-
-        .modal-actions {
-          display: flex;
-          gap: 12px;
-          justify-content: flex-end;
-          padding-top: 20px;
-          border-top: 1px solid #dee2e6;
-        }
-
-        .user-preview {
-          background: #f8f9fa;
-          padding: 12px;
-          border-radius: 6px;
-          margin: 12px 0;
-        }
-
-        .text-muted {
-          color: #666;
-          font-size: 14px;
-        }
-
-        .warning-text {
-          color: #dc3545;
-          font-size: 14px;
-          text-align: center;
-          margin: 16px 0 0 0;
-        }
-
-        @media (max-width: 768px) {
-          .page-container {
-            padding: 16px;
-          }
-
-          .page-header {
-            flex-direction: column;
-            gap: 16px;
-          }
-
-          .filters-section {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .search-box {
-            min-width: unset;
-          }
-
-          .data-table {
-            font-size: 13px;
-          }
-
-          .data-table th,
-          .data-table td {
-            padding: 8px;
-          }
-
-          .action-buttons {
-            flex-direction: column;
-          }
-
-          .modal-content {
-            margin: 10px;
-            max-width: none;
-          }
-
-          .modal-actions {
-            flex-direction: column;
-          }
-        }
-      `}</style>
-        </div>
+        </>
     );
 };
 

@@ -1,9 +1,5 @@
-// src/employee/pages/ShoPage.js
+// src/employee/pages/ShopPage.js
 import React, { useState, useEffect } from 'react';
-import { 
-  FiSearch, FiShoppingCart, FiPackage, FiFilter, 
-  FiGrid, FiList, FiPlus, FiMinus, FiCheck 
-} from 'react-icons/fi';
 import { productAPI, cartAPI } from '../../shared/services/api';
 import Loading from '../../shared/components/Loading';
 
@@ -93,65 +89,85 @@ const ShopPage = () => {
     };
 
     return (
-      <div className={`product-card ${viewMode}`}>
-        <div className="product-image">
-          <FiPackage />
+      <div style={viewMode === 'grid' ? styles.productCardGrid : styles.productCardList}>
+        <div style={viewMode === 'grid' ? styles.productImageGrid : styles.productImageList}>
+          <i className="fas fa-box" style={styles.productIcon}></i>
           {product.stock === 0 && (
-            <div className="out-of-stock-overlay">
+            <div style={styles.outOfStockOverlay}>
+              <i className="fas fa-ban" style={styles.outOfStockIcon}></i>
               Out of Stock
             </div>
           )}
         </div>
         
-        <div className="product-info">
-          <h3 className="product-name">{product.nama_product}</h3>
-          <p className="product-description">{product.deskripsi}</p>
-          <div className="product-price">
+        <div style={viewMode === 'grid' ? styles.productInfoGrid : styles.productInfoList}>
+          <h3 style={styles.productName}>{product.nama_product}</h3>
+          <p style={viewMode === 'grid' ? styles.productDescription : styles.productDescriptionList}>
+            {product.deskripsi}
+          </p>
+          <div style={styles.productPrice}>
             Rp {product.harga.toLocaleString()}
           </div>
-          <div className="product-stock">
-            <span className={`stock-badge ${product.stock <= 10 ? 'low-stock' : 'in-stock'}`}>
+          <div style={styles.productStock}>
+            <span style={{
+              ...styles.stockBadge,
+              backgroundColor: product.stock <= 10 ? 'rgba(255, 102, 0, 0.2)' : 'rgba(143, 209, 79, 0.2)',
+              color: product.stock <= 10 ? '#FF6600' : '#8FD14F'
+            }}>
+              <i className={`fas ${product.stock > 0 ? 'fa-check-circle' : 'fa-times-circle'}`} style={styles.stockIcon}></i>
               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
             </span>
           </div>
         </div>
 
-        <div className="product-actions">
+        <div style={viewMode === 'grid' ? styles.productActionsGrid : styles.productActionsList}>
           {product.stock > 0 && (
             <>
-              <div className="quantity-selector">
+              <div style={styles.quantitySelector}>
                 <button 
                   type="button"
-                  className="quantity-btn"
+                  style={{
+                    ...styles.quantityBtn,
+                    opacity: quantity <= 1 ? 0.5 : 1,
+                    cursor: quantity <= 1 ? 'not-allowed' : 'pointer'
+                  }}
                   onClick={decrementQuantity}
                   disabled={quantity <= 1}
                 >
-                  <FiMinus />
+                  <i className="fas fa-minus"></i>
                 </button>
-                <span className="quantity-display">{quantity}</span>
+                <span style={styles.quantityDisplay}>{quantity}</span>
                 <button 
                   type="button"
-                  className="quantity-btn"
+                  style={{
+                    ...styles.quantityBtn,
+                    opacity: quantity >= product.stock ? 0.5 : 1,
+                    cursor: quantity >= product.stock ? 'not-allowed' : 'pointer'
+                  }}
                   onClick={incrementQuantity}
                   disabled={quantity >= product.stock}
                 >
-                  <FiPlus />
+                  <i className="fas fa-plus"></i>
                 </button>
               </div>
               
               <button
-                className="add-to-cart-btn"
+                style={{
+                  ...styles.addToCartBtn,
+                  opacity: isAddingToCart || product.stock === 0 ? 0.7 : 1,
+                  cursor: isAddingToCart || product.stock === 0 ? 'not-allowed' : 'pointer'
+                }}
                 onClick={() => handleAddToCart(product.id_product, quantity)}
                 disabled={isAddingToCart || product.stock === 0}
               >
                 {isAddingToCart ? (
                   <>
-                    <div className="spinner-sm"></div>
+                    <div style={styles.spinner}></div>
                     Adding...
                   </>
                 ) : (
                   <>
-                    <FiShoppingCart />
+                    <i className="fas fa-shopping-cart" style={styles.buttonIcon}></i>
                     Add to Cart
                   </>
                 )}
@@ -179,19 +195,27 @@ const ShopPage = () => {
     }
 
     return (
-      <div className="pagination">
+      <div style={styles.pagination}>
         <button
-          className="pagination-btn"
+          style={{
+            ...styles.paginationBtn,
+            opacity: currentPage === 1 ? 0.5 : 1,
+            cursor: currentPage === 1 ? 'not-allowed' : 'pointer'
+          }}
           onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
         >
+          <i className="fas fa-chevron-left" style={styles.paginationIcon}></i>
           Previous
         </button>
         
         {pages.map(page => (
           <button
             key={page}
-            className={`pagination-btn ${currentPage === page ? 'active' : ''}`}
+            style={{
+              ...styles.paginationBtn,
+              ...(currentPage === page ? styles.paginationBtnActive : {})
+            }}
             onClick={() => setCurrentPage(page)}
           >
             {page}
@@ -199,565 +223,601 @@ const ShopPage = () => {
         ))}
         
         <button
-          className="pagination-btn"
+          style={{
+            ...styles.paginationBtn,
+            opacity: currentPage === totalPages ? 0.5 : 1,
+            cursor: currentPage === totalPages ? 'not-allowed' : 'pointer'
+          }}
           onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
           disabled={currentPage === totalPages}
         >
           Next
+          <i className="fas fa-chevron-right" style={styles.paginationIcon}></i>
         </button>
       </div>
     );
   };
 
   return (
-    <div className="shop-page">
-      {/* Header */}
-      <div className="shop-header">
-        <div className="header-content">
-          <div>
-            <h1 className="page-title">Product Catalog</h1>
-            <p className="page-subtitle">Browse and add products to your cart</p>
+    <div style={styles.shopPage}>
+      {/* FontAwesome CDN */}
+      <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+      />
+      
+      <div style={styles.container}>
+        {/* Header */}
+        <div style={styles.shopHeader}>
+          <div style={styles.headerContent}>
+            <div style={styles.headerText}>
+              <h1 style={styles.pageTitle}>
+                <i className="fas fa-store" style={styles.headerIcon}></i>
+                Product Catalog
+              </h1>
+              <p style={styles.pageSubtitle}>Browse and add products to your cart</p>
+            </div>
+            <div style={styles.headerStats}>
+              <div style={styles.statItem}>
+                <div style={styles.statValue}>{products.length}</div>
+                <div style={styles.statLabel}>Products</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Search and Filters */}
-      <div className="shop-filters">
-        <div className="filters-content">
-          <form onSubmit={handleSearch} className="search-form">
-            <div className="search-input-group">
-              <FiSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="search-input"
-              />
-              <button type="submit" className="search-btn">
-                Search
+        {/* Search and Filters */}
+        <div style={styles.shopFilters}>
+          <div style={styles.filtersContent}>
+            <form onSubmit={handleSearch} style={styles.searchForm}>
+              <div style={styles.searchInputGroup}>
+                <i className="fas fa-search" style={styles.searchIcon}></i>
+                <input
+                  type="text"
+                  placeholder="Search products..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={styles.searchInput}
+                />
+                <button type="submit" style={styles.searchBtn}>
+                  <i className="fas fa-search" style={styles.buttonIcon}></i>
+                  Search
+                </button>
+              </div>
+            </form>
+
+            <div style={styles.viewControls}>
+              <button
+                style={{
+                  ...styles.viewBtn,
+                  ...(viewMode === 'grid' ? styles.viewBtnActive : {})
+                }}
+                onClick={() => setViewMode('grid')}
+              >
+                <i className="fas fa-th-large"></i>
+              </button>
+              <button
+                style={{
+                  ...styles.viewBtn,
+                  ...(viewMode === 'list' ? styles.viewBtnActive : {})
+                }}
+                onClick={() => setViewMode('list')}
+              >
+                <i className="fas fa-list"></i>
               </button>
             </div>
-          </form>
-
-          <div className="view-controls">
-            <button
-              className={`view-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              <FiGrid />
-            </button>
-            <button
-              className={`view-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              <FiList />
-            </button>
           </div>
         </div>
-      </div>
 
-      {/* Messages */}
-      {successMessage && (
-        <div className="alert alert-success">
-          <FiCheck /> {successMessage}
-        </div>
-      )}
+        {/* Messages */}
+        {successMessage && (
+          <div style={styles.alertSuccess}>
+            <i className="fas fa-check-circle" style={styles.alertIcon}></i>
+            {successMessage}
+          </div>
+        )}
 
-      {error && (
-        <div className="alert alert-error">
-          {error}
-        </div>
-      )}
+        {error && (
+          <div style={styles.alertError}>
+            <i className="fas fa-exclamation-triangle" style={styles.alertIcon}></i>
+            {error}
+          </div>
+        )}
 
-      {/* Products */}
-      {loading ? (
-        <Loading message="Loading products..." />
-      ) : (
-        <>
-          {products.length > 0 ? (
-            <>
-              <div className={`products-container ${viewMode}`}>
-                {products.map(product => (
-                  <ProductCard key={product.id_product} product={product} />
-                ))}
+        {/* Products */}
+        {loading ? (
+          <div style={styles.loadingContainer}>
+            <Loading message="Loading products..." />
+          </div>
+        ) : (
+          <>
+            {products.length > 0 ? (
+              <>
+                <div style={viewMode === 'grid' ? styles.productsGrid : styles.productsList}>
+                  {products.map(product => (
+                    <ProductCard key={product.id_product} product={product} />
+                  ))}
+                </div>
+                
+                {totalPages > 1 && <Pagination />}
+              </>
+            ) : (
+              <div style={styles.noProducts}>
+                <i className="fas fa-box-open" style={styles.emptyIcon}></i>
+                <h3 style={styles.emptyTitle}>No products found</h3>
+                <p style={styles.emptyText}>Try adjusting your search terms or filters</p>
+                <button 
+                  onClick={() => {
+                    setSearchTerm('');
+                    setCurrentPage(1);
+                    fetchProducts();
+                  }}
+                  style={styles.resetButton}
+                >
+                  <i className="fas fa-redo" style={styles.buttonIcon}></i>
+                  Reset Filters
+                </button>
               </div>
-              
-              {totalPages > 1 && <Pagination />}
-            </>
-          ) : (
-            <div className="no-products">
-              <FiPackage className="empty-icon" />
-              <h3>No products found</h3>
-              <p>Try adjusting your search terms or filters</p>
-            </div>
-          )}
-        </>
-      )}
-
-      <style jsx>{`
-        .shop-page {
-          padding: 0;
-        }
-
-        .shop-header {
-          background: white;
-          border-radius: 12px;
-          padding: 2rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-        }
-
-        .page-title {
-          font-size: 2rem;
-          font-weight: 700;
-          color: #333;
-          margin-bottom: 0.5rem;
-        }
-
-        .page-subtitle {
-          color: #666;
-          font-size: 1rem;
-          margin: 0;
-        }
-
-        .shop-filters {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          margin-bottom: 2rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .filters-content {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 2rem;
-        }
-
-        .search-form {
-          flex: 1;
-          max-width: 400px;
-        }
-
-        .search-input-group {
-          display: flex;
-          align-items: center;
-          position: relative;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 12px;
-          color: #666;
-          z-index: 1;
-        }
-
-        .search-input {
-          flex: 1;
-          padding: 10px 12px 10px 40px;
-          border: 1px solid #ddd;
-          border-radius: 6px 0 0 6px;
-          font-size: 14px;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: #007bff;
-        }
-
-        .search-btn {
-          padding: 10px 20px;
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 0 6px 6px 0;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-        }
-
-        .search-btn:hover {
-          background: #0056b3;
-        }
-
-        .view-controls {
-          display: flex;
-          gap: 0.5rem;
-        }
-
-        .view-btn {
-          padding: 8px;
-          border: 1px solid #ddd;
-          background: white;
-          cursor: pointer;
-          border-radius: 6px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #666;
-        }
-
-        .view-btn:hover,
-        .view-btn.active {
-          background: #007bff;
-          color: white;
-          border-color: #007bff;
-        }
-
-        .products-container {
-          margin-bottom: 2rem;
-        }
-
-        .products-container.grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 1.5rem;
-        }
-
-        .products-container.list {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .product-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-          transition: transform 0.2s, box-shadow 0.2s;
-          overflow: hidden;
-        }
-
-        .product-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .product-card.grid {
-          display: flex;
-          flex-direction: column;
-        }
-
-        .product-card.list {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          padding: 1.5rem;
-        }
-
-        .product-image {
-          position: relative;
-          background: #f8f9fa;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #666;
-        }
-
-        .product-card.grid .product-image {
-          height: 200px;
-          font-size: 3rem;
-        }
-
-        .product-card.list .product-image {
-          width: 80px;
-          height: 80px;
-          border-radius: 8px;
-          font-size: 2rem;
-          margin-right: 1.5rem;
-          flex-shrink: 0;
-        }
-
-        .out-of-stock-overlay {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.7);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 600;
-        }
-
-        .product-info {
-          flex: 1;
-        }
-
-        .product-card.grid .product-info {
-          padding: 1.5rem;
-        }
-
-        .product-card.list .product-info {
-          padding-right: 1.5rem;
-        }
-
-        .product-name {
-          font-size: 1.125rem;
-          font-weight: 600;
-          color: #333;
-          margin: 0 0 0.5rem 0;
-          line-height: 1.4;
-        }
-
-        .product-description {
-          color: #666;
-          font-size: 0.875rem;
-          margin: 0 0 1rem 0;
-          line-height: 1.4;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .product-card.list .product-description {
-          -webkit-line-clamp: 1;
-        }
-
-        .product-price {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #007bff;
-          margin-bottom: 0.5rem;
-        }
-
-        .stock-badge {
-          padding: 0.25rem 0.75rem;
-          border-radius: 12px;
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-
-        .stock-badge.in-stock {
-          background: #d4edda;
-          color: #155724;
-        }
-
-        .stock-badge.low-stock {
-          background: #fff3cd;
-          color: #856404;
-        }
-
-        .product-actions {
-          display: flex;
-          flex-direction: column;
-          gap: 1rem;
-        }
-
-        .product-card.grid .product-actions {
-          padding: 0 1.5rem 1.5rem;
-        }
-
-        .product-card.list .product-actions {
-          flex-direction: row;
-          align-items: center;
-          min-width: 200px;
-        }
-
-        .quantity-selector {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          background: #f8f9fa;
-          border-radius: 6px;
-          padding: 0.5rem;
-        }
-
-        .quantity-btn {
-          width: 32px;
-          height: 32px;
-          border: none;
-          background: white;
-          border-radius: 4px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: #666;
-          transition: all 0.2s;
-        }
-
-        .quantity-btn:hover:not(:disabled) {
-          background: #007bff;
-          color: white;
-        }
-
-        .quantity-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .quantity-display {
-          min-width: 40px;
-          text-align: center;
-          font-weight: 600;
-          color: #333;
-        }
-
-        .add-to-cart-btn {
-          padding: 12px 16px;
-          background: #28a745;
-          color: white;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          font-weight: 500;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 0.5rem;
-          transition: background-color 0.2s;
-        }
-
-        .add-to-cart-btn:hover:not(:disabled) {
-          background: #1e7e34;
-        }
-
-        .add-to-cart-btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-
-        .spinner-sm {
-          border: 2px solid transparent;
-          border-top: 2px solid currentColor;
-          border-radius: 50%;
-          width: 16px;
-          height: 16px;
-          animation: spin 1s linear infinite;
-        }
-
-        .pagination {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 0.5rem;
-          margin-top: 2rem;
-        }
-
-        .pagination-btn {
-          padding: 8px 12px;
-          border: 1px solid #ddd;
-          background: white;
-          cursor: pointer;
-          border-radius: 6px;
-          color: #333;
-          font-size: 14px;
-          transition: all 0.2s;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-          background: #f8f9fa;
-          border-color: #007bff;
-        }
-
-        .pagination-btn.active {
-          background: #007bff;
-          color: white;
-          border-color: #007bff;
-        }
-
-        .pagination-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .no-products {
-          text-align: center;
-          padding: 4rem 2rem;
-          color: #666;
-        }
-
-        .empty-icon {
-          font-size: 4rem;
-          color: #ddd;
-          margin-bottom: 1rem;
-        }
-
-        .alert {
-          padding: 12px 16px;
-          border-radius: 6px;
-          margin-bottom: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .alert-success {
-          background: #d4edda;
-          border: 1px solid #c3e6cb;
-          color: #155724;
-        }
-
-        .alert-error {
-          background: #f8d7da;
-          border: 1px solid #f5c6cb;
-          color: #721c24;
-        }
-
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-
-        @media (max-width: 768px) {
-          .shop-header {
-            padding: 1.5rem;
-          }
-
-          .page-title {
-            font-size: 1.5rem;
-          }
-
-          .filters-content {
-            flex-direction: column;
-            gap: 1rem;
-            align-items: stretch;
-          }
-
-          .search-form {
-            max-width: none;
-          }
-
-          .view-controls {
-            align-self: center;
-          }
-
-          .products-container.grid {
-            grid-template-columns: 1fr;
-          }
-
-          .product-card.list {
-            flex-direction: column;
-            align-items: stretch;
-          }
-
-          .product-card.list .product-image {
-            margin-right: 0;
-            margin-bottom: 1rem;
-            height: 120px;
-          }
-
-          .product-card.list .product-actions {
-            flex-direction: column;
-            min-width: auto;
-          }
-        }
-      `}</style>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
+};
+
+// Styles object
+const styles = {
+  shopPage: {
+    minHeight: '100vh',
+    backgroundColor: '#F5F5F5',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+  },
+  container: {
+    maxWidth: '1400px',
+    margin: '0 auto',
+    padding: '24px'
+  },
+  shopHeader: {
+    background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)',
+    borderRadius: '20px',
+    padding: '32px',
+    marginBottom: '24px',
+    color: 'white',
+    position: 'relative',
+    overflow: 'hidden'
+  },
+  headerContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    position: 'relative',
+    zIndex: 10,
+    flexWrap: 'wrap',
+    gap: '24px'
+  },
+  headerText: {
+    flex: 1
+  },
+  pageTitle: {
+    fontSize: '2.5rem',
+    fontWeight: 'bold',
+    margin: '0 0 8px 0',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  },
+  headerIcon: {
+    color: 'white'
+  },
+  pageSubtitle: {
+    fontSize: '1.125rem',
+    margin: 0,
+    opacity: 0.9
+  },
+  headerStats: {
+    display: 'flex',
+    gap: '24px'
+  },
+  statItem: {
+    textAlign: 'center',
+    background: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: '12px',
+    padding: '16px 24px',
+    backdropFilter: 'blur(10px)'
+  },
+  statValue: {
+    fontSize: '2rem',
+    fontWeight: 'bold',
+    marginBottom: '4px'
+  },
+  statLabel: {
+    fontSize: '0.875rem',
+    opacity: 0.9
+  },
+  shopFilters: {
+    background: 'white',
+    borderRadius: '16px',
+    padding: '24px',
+    marginBottom: '24px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb'
+  },
+  filtersContent: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: '24px',
+    flexWrap: 'wrap'
+  },
+  searchForm: {
+    flex: 1,
+    maxWidth: '500px'
+  },
+  searchInputGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    position: 'relative',
+    background: 'white',
+    borderRadius: '12px',
+    border: '2px solid #e5e7eb',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease'
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: '16px',
+    color: '#666',
+    zIndex: 1
+  },
+  searchInput: {
+    flex: 1,
+    padding: '14px 16px 14px 48px',
+    border: 'none',
+    fontSize: '1rem',
+    outline: 'none',
+    background: 'transparent'
+  },
+  searchBtn: {
+    padding: '14px 24px',
+    background: 'linear-gradient(135deg, #FF6600 0%, #ff8533 100%)',
+    color: 'white',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  viewControls: {
+    display: 'flex',
+    gap: '8px',
+    background: '#f8f9fa',
+    borderRadius: '12px',
+    padding: '4px'
+  },
+  viewBtn: {
+    padding: '12px 16px',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
+    borderRadius: '8px',
+    color: '#666',
+    fontSize: '1.125rem',
+    transition: 'all 0.3s ease'
+  },
+  viewBtnActive: {
+    background: '#604CC3',
+    color: 'white',
+    boxShadow: '0 2px 8px rgba(96, 76, 195, 0.3)'
+  },
+  alertSuccess: {
+    padding: '16px 20px',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    background: 'rgba(143, 209, 79, 0.2)',
+    border: '1px solid #8FD14F',
+    color: '#8FD14F',
+    fontWeight: '500'
+  },
+  alertError: {
+    padding: '16px 20px',
+    borderRadius: '12px',
+    marginBottom: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    background: 'rgba(239, 68, 68, 0.2)',
+    border: '1px solid #ef4444',
+    color: '#ef4444',
+    fontWeight: '500'
+  },
+  alertIcon: {
+    fontSize: '1.125rem'
+  },
+  loadingContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    minHeight: '400px'
+  },
+  productsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+    gap: '24px',
+    marginBottom: '32px'
+  },
+  productsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    marginBottom: '32px'
+  },
+  productCardGrid: {
+    background: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.3s ease',
+    overflow: 'hidden',
+    border: '1px solid #e5e7eb',
+    display: 'flex',
+    flexDirection: 'column',
+    cursor: 'pointer'
+  },
+  productCardList: {
+    background: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    transition: 'all 0.3s ease',
+    overflow: 'hidden',
+    border: '1px solid #e5e7eb',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: '24px',
+    cursor: 'pointer'
+  },
+  productImageGrid: {
+    height: '200px',
+    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    color: '#666'
+  },
+  productImageList: {
+    width: '80px',
+    height: '80px',
+    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: '24px',
+    flexShrink: 0,
+    position: 'relative',
+    color: '#666'
+  },
+  productIcon: {
+    fontSize: '2.5rem'
+  },
+  outOfStockOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0, 0, 0, 0.8)',
+    color: 'white',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '600',
+    gap: '8px'
+  },
+  outOfStockIcon: {
+    fontSize: '1.5rem'
+  },
+  productInfoGrid: {
+    padding: '24px',
+    flex: 1
+  },
+  productInfoList: {
+    flex: 1,
+    paddingRight: '24px'
+  },
+  productName: {
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
+    color: '#333',
+    margin: '0 0 8px 0',
+    lineHeight: '1.4'
+  },
+  productDescription: {
+    color: '#666',
+    fontSize: '0.875rem',
+    margin: '0 0 16px 0',
+    lineHeight: '1.5',
+    display: '-webkit-box',
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden'
+  },
+  productDescriptionList: {
+    color: '#666',
+    fontSize: '0.875rem',
+    margin: '0 0 16px 0',
+    lineHeight: '1.5',
+    display: '-webkit-box',
+    WebkitLineClamp: 1,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden'
+  },
+  productPrice: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#FF6600',
+    marginBottom: '8px'
+  },
+  productStock: {
+    marginBottom: '16px'
+  },
+  stockBadge: {
+    padding: '6px 12px',
+    borderRadius: '20px',
+    fontSize: '0.75rem',
+    fontWeight: '600',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  stockIcon: {
+    fontSize: '0.75rem'
+  },
+  productActionsGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '0 24px 24px'
+  },
+  productActionsList: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: '16px',
+    minWidth: '250px'
+  },
+  quantitySelector: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    background: '#f8f9fa',
+    borderRadius: '12px',
+    padding: '8px 12px'
+  },
+  quantityBtn: {
+    width: '36px',
+    height: '36px',
+    border: 'none',
+    background: 'white',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#666',
+    transition: 'all 0.3s ease',
+    fontSize: '0.875rem'
+  },
+  quantityDisplay: {
+    minWidth: '40px',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#333',
+    fontSize: '1rem'
+  },
+  addToCartBtn: {
+    padding: '14px 20px',
+    background: 'linear-gradient(135deg, #8FD14F 0%, #7bc142 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
+    cursor: 'pointer',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease',
+    fontSize: '0.875rem'
+  },
+  spinner: {
+    border: '2px solid transparent',
+    borderTop: '2px solid currentColor',
+    borderRadius: '50%',
+    width: '16px',
+    height: '16px',
+    animation: 'spin 1s linear infinite'
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '8px',
+    marginTop: '32px',
+    flexWrap: 'wrap'
+  },
+  paginationBtn: {
+    padding: '12px 16px',
+    border: '1px solid #e5e7eb',
+    background: 'white',
+    cursor: 'pointer',
+    borderRadius: '8px',
+    color: '#333',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    transition: 'all 0.3s ease',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  paginationBtnActive: {
+    background: '#604CC3',
+    color: 'white',
+    borderColor: '#604CC3'
+  },
+  paginationIcon: {
+    fontSize: '0.75rem'
+  },
+  noProducts: {
+    textAlign: 'center',
+    padding: '64px 32px',
+    background: 'white',
+    borderRadius: '20px',
+    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+    border: '1px solid #e5e7eb'
+  },
+  emptyIcon: {
+    fontSize: '5rem',
+    color: '#d1d5db',
+    marginBottom: '24px'
+  },
+  emptyTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: '8px',
+    margin: '0 0 8px 0'
+  },
+  emptyText: {
+    color: '#666',
+    marginBottom: '32px',
+    fontSize: '1rem',
+    margin: '0 0 32px 0'
+  },
+  resetButton: {
+    background: 'linear-gradient(135deg, #604CC3 0%, #8b5cf6 100%)',
+    color: 'white',
+    border: 'none',
+    padding: '12px 24px',
+    borderRadius: '12px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease'
+  },
+  buttonIcon: {
+    fontSize: '0.875rem'
+  }
 };
 
 export default ShopPage;
